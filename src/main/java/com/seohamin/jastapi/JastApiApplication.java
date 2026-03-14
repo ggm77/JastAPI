@@ -14,6 +14,7 @@ public class JastApiApplication {
     public JastApiApplication() {}
 
     public static void run(
+            final Class<?> sourceClass,
             final boolean isLocalhost,
             final int port
     ) {
