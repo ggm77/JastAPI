@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.seohamin.jastapi'
+version = '1.0.0'
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.seohamin.jastapi_example.Main'
+        )
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+dependencies {
+
+}
+
+test {
+}
