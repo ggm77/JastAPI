@@ -1,4 +1,4 @@
-package com.seohamin.jastapi.mapping;
+package com.seohamin.jastapi.core;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,6 +1,6 @@
-package com.seohamin.jastapi.mapping;
+package com.seohamin.jastapi.web;
 
-import com.seohamin.jastapi.mapping.dto.RouteDto;
+import com.seohamin.jastapi.web.dto.RouteDto;
 
 import java.util.HashMap;
 import java.util.Map;

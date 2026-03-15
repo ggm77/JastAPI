@@ -1,4 +1,4 @@
-package com.seohamin.jastapi.mapping;
+package com.seohamin.jastapi.web;
 
 public enum HttpMethod {
     GET,
