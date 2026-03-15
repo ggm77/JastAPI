@@ -1,5 +1,7 @@
 package com.seohamin.jastapi.web.http;
 
+import java.nio.charset.StandardCharsets;
+
 public class HttpResponse {
     private String version;
     private int statusCode;
@@ -92,5 +94,31 @@ public class HttpResponse {
 
     public void setBody(final byte[] body) {
         this.body = body;
+    }
+
+    public byte[] toBytes() {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(version).append(" ")
+                .append(statusCode).append(" ")
+                .append(statusMessage).append("\r\n");
+
+        if (header != null) {
+            sb.append(header.toCrlfString());
+        }
+
+        sb.append("\r\n");
+
+        final byte[] headerBytes = sb.toString().getBytes(StandardCharsets.UTF_8);
+
+        if (body == null || body.length == 0) {
+            return headerBytes;
+        }
+
+        final byte[] fullResponse = new byte[headerBytes.length + body.length];
+        System.arraycopy(headerBytes, 0, fullResponse, 0, headerBytes.length);
+        System.arraycopy(body, 0, fullResponse, headerBytes.length, body.length);
+
+        return fullResponse;
     }
 }

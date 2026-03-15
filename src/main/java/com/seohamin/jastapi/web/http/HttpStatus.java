@@ -43,4 +43,12 @@ public enum HttpStatus {
 
     private int statusCode;
     private String statusMessage;
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
 }

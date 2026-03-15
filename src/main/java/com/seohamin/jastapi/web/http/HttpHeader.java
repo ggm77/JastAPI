@@ -25,4 +25,12 @@ public class HttpHeader {
         });
         return builder.toString();
     }
+
+    public String toCrlfString() {
+        final StringBuilder builder = new StringBuilder();
+        headers.forEach((key, value) -> {
+            builder.append(key).append(": ").append(value).append("\r\n");
+        });
+        return builder.toString();
+    }
 }

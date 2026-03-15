@@ -33,6 +33,30 @@ public class Router {
         }
     }
 
+    public RouteDto getRoute(
+            final HttpMethod httpMethod,
+            final String path
+    ) {
+        if (httpMethod == null || path == null) {
+            return null;
+        }
+
+        if (httpMethod.equals(HttpMethod.GET)) {
+            return getRouterMap.get(path);
+        }
+        else if (httpMethod.equals(HttpMethod.POST)) {
+            return postRouterMap.get(path);
+        }
+        else if (httpMethod.equals(HttpMethod.PATCH)) {
+            return patchRouterMap.get(path);
+        }
+        else if (httpMethod.equals(HttpMethod.DELETE)) {
+            return deleteRouterMap.get(path);
+        }
+
+        return null;
+    }
+
     public Map<String, RouteDto> getGetRouterMap() {
         return getRouterMap;
     }

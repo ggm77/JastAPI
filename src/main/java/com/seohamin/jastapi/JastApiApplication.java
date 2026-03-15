@@ -2,8 +2,10 @@ package com.seohamin.jastapi;
 
 import com.seohamin.jastapi.core.Container;
 import com.seohamin.jastapi.core.Scanner;
+import com.seohamin.jastapi.web.Dispatcher;
 import com.seohamin.jastapi.web.http.HttpRequest;
 import com.seohamin.jastapi.web.http.HttpRequestParser;
+import com.seohamin.jastapi.web.http.HttpResponse;
 import com.seohamin.jastapi.web.mapping.Router;
 import com.seohamin.jastapi.web.mapping.RouterInitializer;
 
@@ -82,16 +84,11 @@ public class JastApiApplication {
                     System.out.println("클라이언트 연결 됨");
 
                     final HttpRequest httpRequest = HttpRequestParser.parse(in);
-                    System.out.println(">> "+httpRequest.getMethod()+" "+httpRequest.getPath());
 
-                    final String responseBody = "<h1>Hello from my Framework!</h1>";
-                    final String httpResponse = "HTTP/1.1 200 OK\r\n" +
-                            "Content-Type: text/html; charset=UTF-8\r\n" +
-                            "Content-Length: " + responseBody.getBytes(StandardCharsets.UTF_8).length + "\r\n" +
-                            "\r\n" +
-                            responseBody;
+                    final HttpResponse httpResponse = Dispatcher.dispatch(httpRequest, router);
+                    System.out.println(httpResponse);
 
-                    out.write(httpResponse.getBytes(StandardCharsets.UTF_8));
+                    out.write(httpResponse.toBytes());
                     out.flush();
                 }
             }
