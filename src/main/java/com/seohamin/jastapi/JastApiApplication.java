@@ -2,13 +2,12 @@ package com.seohamin.jastapi;
 
 import com.seohamin.jastapi.core.Container;
 import com.seohamin.jastapi.core.Scanner;
+import com.seohamin.jastapi.web.http.HttpRequest;
+import com.seohamin.jastapi.web.http.HttpRequestParser;
 import com.seohamin.jastapi.web.mapping.Router;
 import com.seohamin.jastapi.web.mapping.RouterInitializer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -16,6 +15,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 public class JastApiApplication {
+
+    // 최대 헤더 크기 = 8KB
+    private static final int MAX_HEADER_SIZE = 8192;
 
     public JastApiApplication() {}
 
@@ -74,13 +76,13 @@ public class JastApiApplication {
 
                 try (
                         final Socket socket = serverSocket.accept();
-                        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        OutputStream out = socket.getOutputStream()
+                        final InputStream in = socket.getInputStream();
+                        final OutputStream out = socket.getOutputStream()
                 ) {
                     System.out.println("클라이언트 연결 됨");
 
-                    final String request = in.readLine();
-                    System.out.println("request: " + request);
+                    final HttpRequest httpRequest = HttpRequestParser.parse(in);
+                    System.out.println(">> "+httpRequest.getMethod()+" "+httpRequest.getPath());
 
                     final String responseBody = "<h1>Hello from my Framework!</h1>";
                     final String httpResponse = "HTTP/1.1 200 OK\r\n" +
