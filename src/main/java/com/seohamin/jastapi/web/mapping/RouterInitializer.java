@@ -5,6 +5,7 @@ import com.seohamin.jastapi.annotation.Get;
 import com.seohamin.jastapi.annotation.Patch;
 import com.seohamin.jastapi.annotation.Post;
 import com.seohamin.jastapi.core.Container;
+import com.seohamin.jastapi.web.http.HttpMethod;
 import com.seohamin.jastapi.web.mapping.dto.RouteDto;
 
 import java.lang.annotation.Annotation;
