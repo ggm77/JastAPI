@@ -7,10 +7,10 @@ import java.util.Map;
 
 public class Router {
 
-    private final Map<String, RouteDto> getRouterMap = new HashMap<String, RouteDto>();
-    private final Map<String, RouteDto> postRouterMap = new HashMap<String, RouteDto>();
-    private final Map<String, RouteDto> patchRouterMap = new HashMap<String, RouteDto>();
-    private final Map<String, RouteDto> deleteRouterMap = new HashMap<String, RouteDto>();
+    private final Map<String, RouteDto> getRouterMap = new HashMap<>();
+    private final Map<String, RouteDto> postRouterMap = new HashMap<>();
+    private final Map<String, RouteDto> patchRouterMap = new HashMap<>();
+    private final Map<String, RouteDto> deleteRouterMap = new HashMap<>();
 
     public void addRoute(
             final HttpMethod httpMethod,
