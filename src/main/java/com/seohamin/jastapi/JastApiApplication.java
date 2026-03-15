@@ -2,8 +2,8 @@ package com.seohamin.jastapi;
 
 import com.seohamin.jastapi.core.Container;
 import com.seohamin.jastapi.core.Scanner;
-import com.seohamin.jastapi.web.Router;
-import com.seohamin.jastapi.web.RouterInitializer;
+import com.seohamin.jastapi.web.mapping.Router;
+import com.seohamin.jastapi.web.mapping.RouterInitializer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
