@@ -1,4 +1,4 @@
-package com.seohamin.jastapi.mapping.dto;
+package com.seohamin.jastapi.web.mapping.dto;
 
 import java.lang.reflect.Method;
 

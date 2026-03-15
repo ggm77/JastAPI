@@ -2,17 +2,24 @@ package com.seohamin.jastapi;
 
 import com.seohamin.jastapi.core.Container;
 import com.seohamin.jastapi.core.Scanner;
+import com.seohamin.jastapi.web.Dispatcher;
+import com.seohamin.jastapi.web.http.HttpRequest;
+import com.seohamin.jastapi.web.http.HttpRequestParser;
+import com.seohamin.jastapi.web.http.HttpResponse;
+import com.seohamin.jastapi.web.mapping.Router;
+import com.seohamin.jastapi.web.mapping.RouterInitializer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 
 public class JastApiApplication {
+
+    // 최대 헤더 크기 = 8KB
+    private static final int MAX_HEADER_SIZE = 8192;
 
     public JastApiApplication() {}
 
@@ -33,8 +40,22 @@ public class JastApiApplication {
         // 싱글톤 객체를 저장할 컨테이너
         final Container container = new Container();
 
-        // 스캐너로 클래스 찾고 컨테이너에 등록
-        container.init(scanner.scan(sourceClass.getPackageName()));
+        // 라우터 생성
+        final Router router = new Router();
+
+        // 스캐너로 클래스 탐지
+        final Set<Class<?>> scannedClasses = scanner.scan(sourceClass.getPackageName());
+
+        // 스캐너로 찾은 클래스 컨테이너에 등록
+        container.init(scannedClasses);
+
+        // 스캐너로 찾은 클래스에서 어노테이션 탐지해서 라우터에 등록
+        RouterInitializer.init(
+                router,
+                container,
+                scannedClasses
+        );
+
 
         try (ServerSocket serverSocket = new ServerSocket()) {
 
@@ -57,22 +78,17 @@ public class JastApiApplication {
 
                 try (
                         final Socket socket = serverSocket.accept();
-                        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                        OutputStream out = socket.getOutputStream()
+                        final InputStream in = socket.getInputStream();
+                        final OutputStream out = socket.getOutputStream()
                 ) {
                     System.out.println("클라이언트 연결 됨");
 
-                    final String request = in.readLine();
-                    System.out.println("request: " + request);
+                    final HttpRequest httpRequest = HttpRequestParser.parse(in);
 
-                    final String responseBody = "<h1>Hello from my Framework!</h1>";
-                    final String httpResponse = "HTTP/1.1 200 OK\r\n" +
-                            "Content-Type: text/html; charset=UTF-8\r\n" +
-                            "Content-Length: " + responseBody.getBytes(StandardCharsets.UTF_8).length + "\r\n" +
-                            "\r\n" +
-                            responseBody;
+                    final HttpResponse httpResponse = Dispatcher.dispatch(httpRequest, router);
+                    System.out.println(httpResponse);
 
-                    out.write(httpResponse.getBytes(StandardCharsets.UTF_8));
+                    out.write(httpResponse.toBytes());
                     out.flush();
                 }
             }
