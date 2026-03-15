@@ -1,5 +1,8 @@
 package com.seohamin.jastapi;
 
+import com.seohamin.jastapi.core.Container;
+import com.seohamin.jastapi.core.Scanner;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,6 +26,15 @@ public class JastApiApplication {
         if (port < 0 || port > 65535) {
             throw new IllegalArgumentException("Port must be between 0 and 65535");
         }
+
+        // 클래스를 스캔하는 Scanner
+        final Scanner scanner = new Scanner();
+
+        // 싱글톤 객체를 저장할 컨테이너
+        final Container container = new Container();
+
+        // 스캐너로 클래스 찾고 컨테이너에 등록
+        container.init(scanner.scan(sourceClass.getPackageName()));
 
         try (ServerSocket serverSocket = new ServerSocket()) {
 
