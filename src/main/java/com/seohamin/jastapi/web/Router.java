@@ -31,4 +31,20 @@ public class Router {
             deleteRouterMap.put(path, routeDto);
         }
     }
+
+    public Map<String, RouteDto> getGetRouterMap() {
+        return getRouterMap;
+    }
+
+    public Map<String, RouteDto> getPostRouterMap() {
+        return postRouterMap;
+    }
+
+    public Map<String, RouteDto> getPatchRouterMap() {
+        return patchRouterMap;
+    }
+
+    public Map<String, RouteDto> getDeleteRouterMap() {
+        return deleteRouterMap;
+    }
 }

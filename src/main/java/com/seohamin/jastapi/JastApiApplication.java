@@ -2,6 +2,8 @@ package com.seohamin.jastapi;
 
 import com.seohamin.jastapi.core.Container;
 import com.seohamin.jastapi.core.Scanner;
+import com.seohamin.jastapi.web.Router;
+import com.seohamin.jastapi.web.RouterInitializer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 
 public class JastApiApplication {
 
@@ -33,8 +36,22 @@ public class JastApiApplication {
         // 싱글톤 객체를 저장할 컨테이너
         final Container container = new Container();
 
-        // 스캐너로 클래스 찾고 컨테이너에 등록
-        container.init(scanner.scan(sourceClass.getPackageName()));
+        // 라우터 생성
+        final Router router = new Router();
+
+        // 스캐너로 클래스 탐지
+        final Set<Class<?>> scannedClasses = scanner.scan(sourceClass.getPackageName());
+
+        // 스캐너로 찾은 클래스 컨테이너에 등록
+        container.init(scannedClasses);
+
+        // 스캐너로 찾은 클래스에서 어노테이션 탐지해서 라우터에 등록
+        RouterInitializer.init(
+                router,
+                container,
+                scannedClasses
+        );
+
 
         try (ServerSocket serverSocket = new ServerSocket()) {
 
