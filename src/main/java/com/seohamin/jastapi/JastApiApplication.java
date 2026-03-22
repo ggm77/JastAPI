@@ -13,7 +13,6 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 public class JastApiApplication {
@@ -37,9 +36,6 @@ public class JastApiApplication {
         // 클래스를 스캔하는 Scanner
         final Scanner scanner = new Scanner();
 
-        // 싱글톤 객체를 저장할 컨테이너
-        final Container container = new Container();
-
         // 라우터 생성
         final Router router = new Router();
 
@@ -47,12 +43,11 @@ public class JastApiApplication {
         final Set<Class<?>> scannedClasses = scanner.scan(sourceClass.getPackageName());
 
         // 스캐너로 찾은 클래스 컨테이너에 등록
-        container.init(scannedClasses);
+        Container.init(scannedClasses);
 
         // 스캐너로 찾은 클래스에서 어노테이션 탐지해서 라우터에 등록
         RouterInitializer.init(
                 router,
-                container,
                 scannedClasses
         );
 

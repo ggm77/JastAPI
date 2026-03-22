@@ -11,13 +11,13 @@ import java.util.Set;
 public class Container {
 
     // 컨테이너
-    private final Map<Class<?>, Object> beans = new HashMap<>();
+    private static final Map<Class<?>, Object> beans = new HashMap<>();
 
     /**
      * 싱클톤 객체를 저장할 컨테이너를 생성하는 메서드.
      * @param scannedClasses Scanner로 스캔한 클래스들
      */
-    public void init(final Set<Class<?>> scannedClasses) {
+    public static void init(final Set<Class<?>> scannedClasses) {
 
         for (final Class<?> clazz : scannedClasses) {
             // 클래스가 어노테이션이나 인터페이스, enum이면 제외
@@ -44,7 +44,7 @@ public class Container {
      * @return 해당 클래스의 싱글톤 객체
      * @param <T> 해당 클래스의 타입
      */
-    public <T> T getBean(final Class<T> clazz) {
+    public static <T> T getBean(final Class<T> clazz) {
         final Object bean = beans.get(clazz);
 
         if (bean == null) {
@@ -55,7 +55,7 @@ public class Container {
     }
 
     // FOR DEV
-    public Map<Class<?>, Object> getAllBeans() {
+    public static Map<Class<?>, Object> getAllBeans() {
         return beans;
     }
 }

@@ -16,11 +16,10 @@ public class RouterInitializer {
 
     public static void init(
             final Router router,
-            final Container container,
             final Set<Class<?>> scannedClasses
     ) {
         for (final Class<?> clazz : scannedClasses) {
-            final Object instance = container.getBean(clazz);
+            final Object instance = Container.getBean(clazz);
 
             for (final Method method : clazz.getDeclaredMethods()) {
                 for (final Annotation annotation : method.getAnnotations()) {
