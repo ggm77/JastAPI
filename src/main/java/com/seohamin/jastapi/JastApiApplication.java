@@ -28,7 +28,7 @@ public class JastApiApplication {
         }
 
         // 컨테이너 초기화로 라우터까지 자동 생성
-        Container.init(Scanner.scan(sourceClass.getPackageName()));
+        Container.init(Scanner.scan(sourceClass));
 
         try (ServerSocket serverSocket = new ServerSocket()) {
 
