@@ -7,7 +7,6 @@ import com.seohamin.jastapi.web.http.HttpRequest;
 import com.seohamin.jastapi.web.http.HttpRequestParser;
 import com.seohamin.jastapi.web.http.HttpResponse;
 import com.seohamin.jastapi.web.mapping.Router;
-import com.seohamin.jastapi.web.mapping.RouterInitializer;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -46,11 +45,7 @@ public class JastApiApplication {
         Container.init(scannedClasses);
 
         // 스캐너로 찾은 클래스에서 어노테이션 탐지해서 라우터에 등록
-        RouterInitializer.init(
-                router,
-                scannedClasses
-        );
-
+        router.init(scannedClasses);
 
         try (ServerSocket serverSocket = new ServerSocket()) {
 
