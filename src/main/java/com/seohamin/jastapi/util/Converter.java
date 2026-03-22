@@ -4,6 +4,9 @@ import java.nio.charset.StandardCharsets;
 
 public class Converter {
 
+    // 인스턴스화 방지
+    public Converter() {}
+
     public static byte[] convertToByte(final Object object) {
         if (object == null) {
             return new byte[0];

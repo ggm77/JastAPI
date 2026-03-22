@@ -1,5 +1,7 @@
 package com.seohamin.jastapi.core;
 
+import com.seohamin.jastapi.web.mapping.Router;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,13 +13,20 @@ import java.util.Set;
 public class Container {
 
     // 컨테이너
-    private final Map<Class<?>, Object> beans = new HashMap<>();
+    private static final Map<Class<?>, Object> beans = new HashMap<>();
+
+    // 인스턴스화 방지
+    public Container() {}
 
     /**
      * 싱클톤 객체를 저장할 컨테이너를 생성하는 메서드.
      * @param scannedClasses Scanner로 스캔한 클래스들
      */
-    public void init(final Set<Class<?>> scannedClasses) {
+    public static void init(final Set<Class<?>> scannedClasses) {
+
+        // 라우터 생성 및 저장
+        final Router router = new Router();
+        beans.put(Router.class, router);
 
         for (final Class<?> clazz : scannedClasses) {
             // 클래스가 어노테이션이나 인터페이스, enum이면 제외
@@ -36,6 +45,9 @@ public class Container {
                 ex.printStackTrace();
             }
         }
+
+        // 빈 등록이 끝난 후 라우터 초기화
+        router.init(scannedClasses);
     }
 
     /**
@@ -44,7 +56,7 @@ public class Container {
      * @return 해당 클래스의 싱글톤 객체
      * @param <T> 해당 클래스의 타입
      */
-    public <T> T getBean(final Class<T> clazz) {
+    public static <T> T getBean(final Class<T> clazz) {
         final Object bean = beans.get(clazz);
 
         if (bean == null) {
@@ -55,7 +67,7 @@ public class Container {
     }
 
     // FOR DEV
-    public Map<Class<?>, Object> getAllBeans() {
+    public static Map<Class<?>, Object> getAllBeans() {
         return beans;
     }
 }

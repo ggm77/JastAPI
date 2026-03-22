@@ -15,13 +15,16 @@ import java.util.jar.JarFile;
  */
 public class Scanner {
 
+    // 인스턴스화 방지
+    public Scanner() {}
+
     /**
      * 프로젝트의 패키지 이름을 받아서 하위에 존재하는 모든 class를 찾는 메소드.
      * Jar파일 또한 지원함.
      * @param packageName 패키지명
      * @return 찾은 클래스의 집합
      */
-    public Set<Class<?>> scan(final String packageName) {
+    public static Set<Class<?>> scan(final String packageName) {
         final Set<Class<?>> classes = new HashSet<>();
 
         final String path = packageName.replace(".", "/");
@@ -56,7 +59,7 @@ public class Scanner {
      * @throws IOException Jar 파일 접근에 문제가 생겼을 때 발생
      * @throws ClassNotFoundException Class 객체로 변환에 실패할 경우 발생
      */
-    private void scanJar(
+    private static void scanJar(
             final URL resource,
             final String path,
             final Set<Class<?>> classes
@@ -86,7 +89,7 @@ public class Scanner {
      * @param classes 찾은 클래스를 저장할 집합
      * @throws ClassNotFoundException Class 객체로 변환 실패한 경우 발생
      */
-    private void scanDirectory(
+    private static void scanDirectory(
             final File dir,
             final String packageName,
             final Set<Class<?>> classes
