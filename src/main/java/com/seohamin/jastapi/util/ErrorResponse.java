@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 
 public class ErrorResponse {
 
+    // 인스턴스화 방지
+    public ErrorResponse() {}
+
     public static HttpResponse createBadRequest(
             final String version
     ) {

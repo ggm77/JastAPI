@@ -6,19 +6,14 @@ import com.seohamin.jastapi.web.Dispatcher;
 import com.seohamin.jastapi.web.http.HttpRequest;
 import com.seohamin.jastapi.web.http.HttpRequestParser;
 import com.seohamin.jastapi.web.http.HttpResponse;
-import com.seohamin.jastapi.web.mapping.Router;
 
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Set;
 
 public class JastApiApplication {
-
-    // 최대 헤더 크기 = 8KB
-    private static final int MAX_HEADER_SIZE = 8192;
-
+    
     public JastApiApplication() {}
 
     public static void run(
@@ -32,20 +27,8 @@ public class JastApiApplication {
             throw new IllegalArgumentException("Port must be between 0 and 65535");
         }
 
-        // 클래스를 스캔하는 Scanner
-        final Scanner scanner = new Scanner();
-
-        // 라우터 생성
-        final Router router = new Router();
-
-        // 스캐너로 클래스 탐지
-        final Set<Class<?>> scannedClasses = scanner.scan(sourceClass.getPackageName());
-
-        // 스캐너로 찾은 클래스 컨테이너에 등록
-        Container.init(scannedClasses);
-
-        // 스캐너로 찾은 클래스에서 어노테이션 탐지해서 라우터에 등록
-        router.init(scannedClasses);
+        // 컨테이너 초기화로 라우터까지 자동 생성
+        Container.init(Scanner.scan(sourceClass.getPackageName()));
 
         try (ServerSocket serverSocket = new ServerSocket()) {
 
@@ -75,7 +58,7 @@ public class JastApiApplication {
 
                     final HttpRequest httpRequest = HttpRequestParser.parse(in);
 
-                    final HttpResponse httpResponse = Dispatcher.dispatch(httpRequest, router);
+                    final HttpResponse httpResponse = Dispatcher.dispatch(httpRequest);
                     System.out.println(httpResponse);
 
                     out.write(httpResponse.toBytes());

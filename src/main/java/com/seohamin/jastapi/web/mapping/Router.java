@@ -16,10 +16,17 @@ import java.util.Set;
 
 public class Router {
 
-    private final Map<String, RouteDto> getRouterMap = new HashMap<>();
-    private final Map<String, RouteDto> postRouterMap = new HashMap<>();
-    private final Map<String, RouteDto> patchRouterMap = new HashMap<>();
-    private final Map<String, RouteDto> deleteRouterMap = new HashMap<>();
+    private final Map<String, RouteDto> getRouterMap;
+    private final Map<String, RouteDto> postRouterMap;
+    private final Map<String, RouteDto> patchRouterMap;
+    private final Map<String, RouteDto> deleteRouterMap;
+
+    public Router() {
+        getRouterMap = new HashMap<>();
+        postRouterMap = new HashMap<>();
+        patchRouterMap = new HashMap<>();
+        deleteRouterMap = new HashMap<>();
+    }
 
     public void init(
             final Set<Class<?>> scannedClasses

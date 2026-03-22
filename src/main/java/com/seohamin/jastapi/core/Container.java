@@ -1,5 +1,7 @@
 package com.seohamin.jastapi.core;
 
+import com.seohamin.jastapi.web.mapping.Router;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,11 +15,18 @@ public class Container {
     // 컨테이너
     private static final Map<Class<?>, Object> beans = new HashMap<>();
 
+    // 인스턴스화 방지
+    public Container() {}
+
     /**
      * 싱클톤 객체를 저장할 컨테이너를 생성하는 메서드.
      * @param scannedClasses Scanner로 스캔한 클래스들
      */
     public static void init(final Set<Class<?>> scannedClasses) {
+
+        // 라우터 생성 및 저장
+        final Router router = new Router();
+        beans.put(Router.class, router);
 
         for (final Class<?> clazz : scannedClasses) {
             // 클래스가 어노테이션이나 인터페이스, enum이면 제외
@@ -36,6 +45,9 @@ public class Container {
                 ex.printStackTrace();
             }
         }
+
+        // 빈 등록이 끝난 후 라우터 초기화
+        router.init(scannedClasses);
     }
 
     /**

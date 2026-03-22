@@ -1,5 +1,6 @@
 package com.seohamin.jastapi.web;
 
+import com.seohamin.jastapi.core.Container;
 import com.seohamin.jastapi.util.Converter;
 import com.seohamin.jastapi.util.ErrorResponse;
 import com.seohamin.jastapi.util.HttpTime;
@@ -11,10 +12,10 @@ import java.lang.reflect.InvocationTargetException;
 
 public class Dispatcher {
 
-    public static HttpResponse dispatch(
-            final HttpRequest httpRequest,
-            final Router router
-    ) {
+    // 인스턴스화 방지
+    public Dispatcher() {}
+
+    public static HttpResponse dispatch(final HttpRequest httpRequest) {
         final String method = httpRequest.getMethod();
         final String path = httpRequest.getPath();
         final String version = httpRequest.getVersion();
@@ -36,7 +37,7 @@ public class Dispatcher {
             httpMethod = null;
         }
 
-        final RouteDto routeDto = router.getRoute(httpMethod, path);
+        final RouteDto routeDto = Container.getBean(Router.class).getRoute(httpMethod, path);
 
         if (routeDto == null) {
             return ErrorResponse.createBadRequest(version);
