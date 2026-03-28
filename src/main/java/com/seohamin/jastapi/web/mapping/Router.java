@@ -12,7 +12,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class Router {
 
@@ -29,9 +28,10 @@ public class Router {
     }
 
     public void init(
-            final Set<Class<?>> scannedClasses
+            final Map<String, Class<?>> scannedClasses
     ) {
-        for (final Class<?> clazz : scannedClasses) {
+        for (final String key : scannedClasses.keySet()) {
+            final Class<?> clazz = scannedClasses.get(key);
             final Object instance = Container.getBean(clazz);
 
             for (final Method method : clazz.getDeclaredMethods()) {

@@ -4,14 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * 프로젝트의 패키지 이름을 받아서 하위에 존재하는 모든 class를 찾는 클래스.
+ * 프로젝트의 클래스를 통해 패키지 정보를 받아서 하위에 존재하는 모든 class를 찾는 클래스.
  */
 public class Scanner {
 
@@ -19,13 +17,16 @@ public class Scanner {
     public Scanner() {}
 
     /**
-     * 프로젝트의 패키지 이름을 받아서 하위에 존재하는 모든 class를 찾는 메소드.
+     * 프로젝트의 클래스를 통해 패키지를 받아서 하위에 존재하는 모든 class를 찾는 메소드.
      * Jar파일 또한 지원함.
-     * @param packageName 패키지명
+     * @param sourceClass main 메서드가 존재하는 클래스
      * @return 찾은 클래스의 집합
      */
-    public static Set<Class<?>> scan(final String packageName) {
-        final Set<Class<?>> classes = new HashSet<>();
+    public static Map<String, Class<?>> scan(final Class<?> sourceClass) {
+
+        final String packageName = sourceClass.getPackageName();
+
+        final Map<String, Class<?>> classes = new HashMap<>();
 
         final String path = packageName.replace(".", "/");
         final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -62,7 +63,7 @@ public class Scanner {
     private static void scanJar(
             final URL resource,
             final String path,
-            final Set<Class<?>> classes
+            final Map<String, Class<?>> classes
     ) throws IOException, ClassNotFoundException {
         final JarURLConnection conn = (JarURLConnection) resource.openConnection();
 
@@ -74,8 +75,10 @@ public class Scanner {
                 final String name = entry.getName();
 
                 if (name.startsWith(path) && name.endsWith(".class")) {
-                    classes.add(
-                            Class.forName(name.replace("/", ".").replace(".class", ""))
+                    final Class<?> clazz = Class.forName(name.replace("/", ".").replace(".class", ""));
+                    classes.put(
+                            clazz.getName(),
+                            clazz
                     );
                 }
             }
@@ -92,7 +95,7 @@ public class Scanner {
     private static void scanDirectory(
             final File dir,
             final String packageName,
-            final Set<Class<?>> classes
+            final Map<String, Class<?>> classes
     ) throws ClassNotFoundException{
 
         final File[] files = dir.listFiles();
@@ -106,8 +109,10 @@ public class Scanner {
                 scanDirectory(f, packageName + "." + f.getName(), classes);
             }
             else if (f.getName().endsWith(".class")) {
-                classes.add(
-                        Class.forName(packageName+"."+f.getName().replace(".class", ""))
+                final Class<?> clazz = Class.forName(packageName+"."+f.getName().replace(".class", ""));
+                classes.put(
+                        clazz.getName(),
+                        clazz
                 );
             }
         }

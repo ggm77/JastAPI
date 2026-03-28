@@ -12,10 +12,20 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * JastAPI를 동작시키는 클래스
+ */
 public class JastApiApplication {
-    
+
+    // 인스턴스화 방지
     public JastApiApplication() {}
 
+    /**
+     * JastAPI 서버를 시작하는 메서드
+     * @param sourceClass 이 메서드를 호출하는 클래스
+     * @param isLocalhost localhost로 열지 여부
+     * @param port 서버 열 포트 번호
+     */
     public static void run(
             final Class<?> sourceClass,
             final boolean isLocalhost,
@@ -28,7 +38,7 @@ public class JastApiApplication {
         }
 
         // 컨테이너 초기화로 라우터까지 자동 생성
-        Container.init(Scanner.scan(sourceClass.getPackageName()));
+        Container.init(Scanner.scan(sourceClass));
 
         try (ServerSocket serverSocket = new ServerSocket()) {
 

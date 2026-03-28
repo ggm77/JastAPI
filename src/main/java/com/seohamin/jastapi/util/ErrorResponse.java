@@ -7,11 +7,19 @@ import com.seohamin.jastapi.web.http.HttpStatus;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
+/**
+ * 에러 발생 했을 때 사용할 HttpResponse를 생성하는 클래스.
+ */
 public class ErrorResponse {
 
     // 인스턴스화 방지
     public ErrorResponse() {}
 
+    /**
+     * BadRequest에 대한 HttpResponse를 생성한다.
+     * @param version Http 버전
+     * @return BadRequest에 대한 HttpResponse
+     */
     public static HttpResponse createBadRequest(
             final String version
     ) {
