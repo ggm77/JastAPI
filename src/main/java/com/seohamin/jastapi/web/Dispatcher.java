@@ -10,11 +10,19 @@ import com.seohamin.jastapi.web.mapping.dto.RouteDto;
 
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * 외부에서 들어오는 요청을 적절히 처리하는 클래스
+ */
 public class Dispatcher {
 
     // 인스턴스화 방지
     public Dispatcher() {}
 
+    /**
+     * 클라이언트로 요청받은 Http 요청에 따라 알맞은 처리를하고 응답을 주는 메서드.
+     * @param httpRequest Http 요청 정보가 담긴 객체
+     * @return Http 응답 값
+     */
     public static HttpResponse dispatch(final HttpRequest httpRequest) {
         final String method = httpRequest.getMethod();
         final String path = httpRequest.getPath();

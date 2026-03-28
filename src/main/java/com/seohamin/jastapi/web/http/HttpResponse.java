@@ -2,6 +2,9 @@ package com.seohamin.jastapi.web.http;
 
 import java.nio.charset.StandardCharsets;
 
+/**
+ * Http 응답에 대한 정보를 저장할 클래스
+ */
 public class HttpResponse {
     private String version;
     private int statusCode;
@@ -9,6 +12,7 @@ public class HttpResponse {
     private HttpHeader header;
     private byte[] body;
 
+    // Default constructor
     public HttpResponse() {
         this.version = null;
         this.statusCode = 0;
@@ -96,6 +100,10 @@ public class HttpResponse {
         this.body = body;
     }
 
+    /**
+     * HttpResponse를 바이트로 변환하는 메서드.
+     * @return byte 배열로 된 HttpResponse
+     */
     public byte[] toBytes() {
         final StringBuilder sb = new StringBuilder();
 

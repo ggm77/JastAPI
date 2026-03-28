@@ -1,5 +1,8 @@
 package com.seohamin.jastapi.web.http;
 
+/**
+ * Http 요청에 대한 정보를 저장할 클래스
+ */
 public class HttpRequest {
     private String method;
     private String path;
@@ -7,6 +10,7 @@ public class HttpRequest {
     private HttpHeader header;
     private byte[] body;
 
+    // Default constructor
     public HttpRequest() {
         this.method = null;
         this.path = null;

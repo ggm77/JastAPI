@@ -5,8 +5,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * 입력 받는 값들을 HttpRequest 객체로 파싱하는 클래스
+ */
 public class HttpRequestParser {
 
+    /**
+     * Http를 통해 들어오는 입력들을 받아서 적절하게 HttpRequest 객체에 넣는 메서드.
+     * @param in Http로 들어오는 입력 스트림
+     * @return HttpRequest 객체
+     * @throws IOException 입력 값 받는 도중 에러 발생시 IOException 발생
+     */
     public static HttpRequest parse(final InputStream in) throws IOException {
         final HttpRequest httpRequest = new HttpRequest();
 
