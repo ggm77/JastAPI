@@ -19,7 +19,13 @@ public class HttpRequestParser {
     public static HttpRequest parse(final InputStream in) throws IOException {
         final HttpRequest httpRequest = new HttpRequest();
 
-        final String[] requestLine = readLine(in).split(" ");
+        final String rawLine = readLine(in);
+
+        if (rawLine == null || rawLine.trim().isBlank()) {
+            return null;
+        }
+
+        final String[] requestLine = rawLine.split(" ");
         httpRequest.setMethod(requestLine[0]);
         httpRequest.setPath(requestLine[1]);
         httpRequest.setVersion(requestLine[2]);

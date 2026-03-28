@@ -24,6 +24,11 @@ public class Dispatcher {
      * @return Http 응답 값
      */
     public static HttpResponse dispatch(final HttpRequest httpRequest) {
+
+        if (httpRequest == null) {
+            return ErrorResponse.createBadRequest("HTTP/1.1");
+        }
+
         final String method = httpRequest.getMethod();
         final String path = httpRequest.getPath();
         final String version = httpRequest.getVersion();
@@ -64,7 +69,8 @@ public class Dispatcher {
         final HttpHeader responseHeader = new HttpHeader();
         responseHeader.add("Content-Type", "application/json; charset=utf-8");
         responseHeader.add("Content-Length", String.valueOf(body.length));
-        responseHeader.add("Connection", "keep-alive");
+//        responseHeader.add("Connection", "keep-alive");
+        responseHeader.add("Connection", "close"); // while문을 통해 순차적으로 처리하기 때문
         responseHeader.add("Cache-Control", "no-cache, no-store, must-revalidate");
         responseHeader.add("Date", HttpTime.getCurrentTime());
 

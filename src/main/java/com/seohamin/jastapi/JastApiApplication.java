@@ -69,7 +69,6 @@ public class JastApiApplication {
                     final HttpRequest httpRequest = HttpRequestParser.parse(in);
 
                     final HttpResponse httpResponse = Dispatcher.dispatch(httpRequest);
-                    System.out.println(httpResponse);
 
                     out.write(httpResponse.toBytes());
                     out.flush();
