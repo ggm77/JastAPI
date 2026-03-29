@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 public class Converter {
 
     // 인스턴스화 방지
-    public Converter() {}
+    private Converter() {}
 
     /**
      * 특정 객체를 byte 타입 배열로 바꾸는 메서드.

@@ -21,7 +21,7 @@ public class Container {
     private static final Set<Class<?>> isCreation = new HashSet<>();
 
     // 인스턴스화 방지
-    public Container() {}
+    private Container() {}
 
     /**
      * 싱클톤 객체를 저장할 컨테이너를 생성하는 메서드.

@@ -18,7 +18,7 @@ import java.net.Socket;
 public class JastApiApplication {
 
     // 인스턴스화 방지
-    public JastApiApplication() {}
+    private JastApiApplication() {}
 
     /**
      * JastAPI 서버를 시작하는 메서드

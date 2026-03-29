@@ -16,7 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 public class Dispatcher {
 
     // 인스턴스화 방지
-    public Dispatcher() {}
+    private Dispatcher() {}
 
     /**
      * 클라이언트로 요청받은 Http 요청에 따라 알맞은 처리를하고 응답을 주는 메서드.

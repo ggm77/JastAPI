@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class ErrorResponse {
 
     // 인스턴스화 방지
-    public ErrorResponse() {}
+    private ErrorResponse() {}
 
     /**
      * BadRequest에 대한 HttpResponse를 생성한다.
