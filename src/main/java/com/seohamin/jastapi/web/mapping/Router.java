@@ -1,9 +1,6 @@
 package com.seohamin.jastapi.web.mapping;
 
-import com.seohamin.jastapi.annotation.Delete;
-import com.seohamin.jastapi.annotation.Get;
-import com.seohamin.jastapi.annotation.Patch;
-import com.seohamin.jastapi.annotation.Post;
+import com.seohamin.jastapi.annotation.*;
 import com.seohamin.jastapi.core.Container;
 import com.seohamin.jastapi.web.http.HttpMethod;
 import com.seohamin.jastapi.web.mapping.dto.RouteDto;
@@ -13,6 +10,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component // 라우터도 컨테이너에서 빈으로서 관리됨
 public class Router {
 
     private final Map<String, RouteDto> getRouterMap;

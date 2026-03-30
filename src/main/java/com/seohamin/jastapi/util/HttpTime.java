@@ -13,7 +13,7 @@ public class HttpTime {
             DateTimeFormatter.RFC_1123_DATE_TIME.withZone(ZoneId.of("GMT"));
 
     // 인스턴스화 방지
-    public HttpTime() {}
+    private HttpTime() {}
 
     /**
      * 현재 시각을 Http에서 사용하는 시간 포멧에 맞게 제공하는 메서드.

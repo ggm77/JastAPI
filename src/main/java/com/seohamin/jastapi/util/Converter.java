@@ -1,11 +1,15 @@
 package com.seohamin.jastapi.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
 
 public class Converter {
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     // 인스턴스화 방지
-    public Converter() {}
+    private Converter() {}
 
     /**
      * 특정 객체를 byte 타입 배열로 바꾸는 메서드.
@@ -25,7 +29,12 @@ public class Converter {
             return ((String) object).getBytes(StandardCharsets.UTF_8);
         }
         else {
-            return object.toString().getBytes(StandardCharsets.UTF_8);
+            try {
+                return objectMapper.writeValueAsBytes(object);
+            } catch (JsonProcessingException ex) {
+                System.err.println("[ERROR] JSON Processing Exception occur");
+                return new byte[0];
+            }
         }
     }
 }

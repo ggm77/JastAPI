@@ -18,7 +18,7 @@ import java.net.Socket;
 public class JastApiApplication {
 
     // 인스턴스화 방지
-    public JastApiApplication() {}
+    private JastApiApplication() {}
 
     /**
      * JastAPI 서버를 시작하는 메서드
@@ -69,7 +69,6 @@ public class JastApiApplication {
                     final HttpRequest httpRequest = HttpRequestParser.parse(in);
 
                     final HttpResponse httpResponse = Dispatcher.dispatch(httpRequest);
-                    System.out.println(httpResponse);
 
                     out.write(httpResponse.toBytes());
                     out.flush();

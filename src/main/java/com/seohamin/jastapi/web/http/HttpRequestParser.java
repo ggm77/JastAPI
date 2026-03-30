@@ -10,6 +10,9 @@ import java.nio.charset.StandardCharsets;
  */
 public class HttpRequestParser {
 
+    // 인스턴스화 방지
+    private HttpRequestParser() {}
+
     /**
      * Http를 통해 들어오는 입력들을 받아서 적절하게 HttpRequest 객체에 넣는 메서드.
      * @param in Http로 들어오는 입력 스트림
@@ -19,7 +22,13 @@ public class HttpRequestParser {
     public static HttpRequest parse(final InputStream in) throws IOException {
         final HttpRequest httpRequest = new HttpRequest();
 
-        final String[] requestLine = readLine(in).split(" ");
+        final String rawLine = readLine(in);
+
+        if (rawLine == null || rawLine.trim().isBlank()) {
+            return null;
+        }
+
+        final String[] requestLine = rawLine.split(" ");
         httpRequest.setMethod(requestLine[0]);
         httpRequest.setPath(requestLine[1]);
         httpRequest.setVersion(requestLine[2]);
