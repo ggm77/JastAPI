@@ -1,5 +1,6 @@
 package com.seohamin.jastapi.core;
 
+import com.seohamin.jastapi.annotation.Component;
 import com.seohamin.jastapi.web.mapping.Router;
 
 import java.lang.reflect.Constructor;
@@ -37,13 +38,11 @@ public class Container {
         for (final String key : scannedClasses.keySet()) {
             final Class<?> clazz = scannedClasses.get(key);
 
-            // 클래스가 어노테이션이나 인터페이스, enum이면 제외
-            if (clazz.isAnnotation() || clazz.isInterface() || clazz.isEnum()) {
-                continue;
+            // @Component 어노테이션이 붙은 경우만 빈에 등록
+            if (clazz.isAnnotationPresent(Component.class)) {
+                // 빈에 등록 되지 않은 클래스의 경우 빈에 등록되는 특성을 이용
+                getBean(clazz);
             }
-
-            // 빈에 등록 되지 않은 클래스의 경우 빈에 등록되는 특성을 이용
-            getBean(clazz);
         }
 
         // 빈 등록이 끝난 후 라우터 초기화
@@ -58,6 +57,12 @@ public class Container {
      * @param <T> 해당 클래스의 타입
      */
     public static <T> T getBean(final Class<T> clazz) {
+
+        // 컴포넌트 아닌 경우 (빈 등록 대상이 아닌경우) null 반환
+        if (!clazz.isAnnotationPresent(Component.class)) {
+            return null;
+        }
+
         if (beans.containsKey(clazz)) {
             return clazz.cast(beans.get(clazz));
         }
