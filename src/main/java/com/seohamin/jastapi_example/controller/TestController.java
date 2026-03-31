@@ -18,4 +18,9 @@ public class TestController {
     public TestResponseDto hello() {
         return testService.test();
     }
+
+    @Get("/test")
+    public String test() {
+        return "test";
+    }
 }
