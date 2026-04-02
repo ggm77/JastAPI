@@ -3,11 +3,16 @@ package com.seohamin.jastapi.web.mapping;
 import com.seohamin.jastapi.annotation.*;
 import com.seohamin.jastapi.core.Container;
 import com.seohamin.jastapi.web.http.HttpMethod;
+import com.seohamin.jastapi.web.mapping.dto.ParameterDto;
+import com.seohamin.jastapi.web.mapping.dto.ParameterSource;
 import com.seohamin.jastapi.web.mapping.dto.RouteDto;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component // 라우터도 컨테이너에서 빈으로서 관리됨
@@ -35,7 +40,22 @@ public class Router {
             for (final Method method : clazz.getDeclaredMethods()) {
                 for (final Annotation annotation : method.getAnnotations()) {
 
-                    final RouteDto routeDto = new RouteDto(instance, method);
+                    final Parameter[] parameters = method.getParameters();
+                    final List<ParameterDto> parameterDto = new ArrayList<>();
+
+                    for (final Parameter param : parameters) {
+                        if (param.isAnnotationPresent(RequestBody.class)) {
+                            parameterDto.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.BODY, null));
+                        } else if (param.isAnnotationPresent(RequestParam.class)) {
+                            final String annotationValue = param.getAnnotation(RequestParam.class).value();
+                            parameterDto.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.PARAM, annotationValue));
+                        } else if (param.isAnnotationPresent(RequestQuery.class)) {
+                            final String annotationValue = param.getAnnotation(RequestQuery.class).value();
+                            parameterDto.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.QUERY, annotationValue));
+                        }
+                    }
+
+                    final RouteDto routeDto = new RouteDto(instance, method, parameterDto);
 
                     if (annotation.annotationType().equals(Get.class)) {
                         final Get getAnnotation = (Get) annotation;
