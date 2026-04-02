@@ -6,9 +6,13 @@ import com.seohamin.jastapi.util.ErrorResponse;
 import com.seohamin.jastapi.util.HttpTime;
 import com.seohamin.jastapi.web.http.*;
 import com.seohamin.jastapi.web.mapping.Router;
+import com.seohamin.jastapi.web.mapping.dto.ParameterDto;
+import com.seohamin.jastapi.web.mapping.dto.ParameterSource;
 import com.seohamin.jastapi.web.mapping.dto.RouteDto;
 
-import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 외부에서 들어오는 요청을 적절히 처리하는 클래스
@@ -31,7 +35,9 @@ public class Dispatcher {
 
         final String method = httpRequest.getMethod();
         final String path = httpRequest.getPath();
+        final Map<String, List<String>> query = httpRequest.getQuery();
         final String version = httpRequest.getVersion();
+        final byte[] requestBody = httpRequest.getBody();
 
         final HttpMethod httpMethod;
         if ("GET".equalsIgnoreCase(method)) {
@@ -59,9 +65,30 @@ public class Dispatcher {
         final Object result;
         final byte[] body;
         try {
-            result = routeDto.getMethod().invoke(routeDto.getInstance());
+            final List<ParameterDto> parameters = routeDto.getParameters();
+            final Object[] args = new Object[parameters.size()];
+
+            for (int i = 0; i < parameters.size(); i++) {
+                final ParameterDto parameterDto = parameters.get(i);
+
+                if (parameterDto.getParameterSource().equals(ParameterSource.BODY)) {
+                    args[i] = Converter.objectMapper.readValue(requestBody, parameterDto.getType());
+                }
+//                else if (parameterDto.getParameterSource().equals(ParameterSource.PARAM)) {
+//
+//                }
+                else if (parameterDto.getParameterSource().equals(ParameterSource.QUERY)) {
+                    if (query == null) {
+                        args[i] = Collections.emptyList();
+                    } else {
+                        args[i] = query.get(parameterDto.getAnnotationValue());
+                    }
+                }
+            }
+
+            result = routeDto.getMethod().invoke(routeDto.getInstance(), args);
             body = Converter.convertToByte(result);
-        } catch (IllegalAccessException | InvocationTargetException ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
             return ErrorResponse.createBadRequest(version);
         }

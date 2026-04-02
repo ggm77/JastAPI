@@ -3,7 +3,9 @@ package com.seohamin.jastapi.web.http;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /**
  * 입력 받는 값들을 HttpRequest 객체로 파싱하는 클래스
@@ -29,8 +31,17 @@ public class HttpRequestParser {
         }
 
         final String[] requestLine = rawLine.split(" ");
+        final String rawPath = URLDecoder.decode(requestLine[1], StandardCharsets.UTF_8);
+        final int queryStringIndex = rawPath.indexOf('?');
+
+        if (queryStringIndex != -1) {
+            httpRequest.setPath(rawPath.substring(0, queryStringIndex));
+            httpRequest.setQuery(parseQuery(rawPath.substring(queryStringIndex+1)));
+        } else {
+            httpRequest.setPath(rawPath);
+        }
+
         httpRequest.setMethod(requestLine[0]);
-        httpRequest.setPath(requestLine[1]);
         httpRequest.setVersion(requestLine[2]);
 
 
@@ -57,7 +68,7 @@ public class HttpRequestParser {
 
         final String contentLengthStr = httpHeader.getContentLength();
         if (contentLengthStr != null) {
-            final int contentLength = Integer.parseInt(contentLengthStr);
+            final int contentLength = Integer.parseInt(contentLengthStr.trim());
             final byte[] body = new byte[contentLength];
 
             int totalRead = 0;
@@ -96,5 +107,31 @@ public class HttpRequestParser {
         }
 
         return bos.toString(StandardCharsets.UTF_8);
+    }
+
+    private static Map<String, List<String>> parseQuery(final String rawQuery) {
+        if (rawQuery == null || rawQuery.isBlank()) {
+            return Collections.emptyMap();
+        }
+
+        final Map<String, List<String>> query = new HashMap<>();
+        final String[] pairs = rawQuery.split("&");
+
+        for (String pair : pairs) {
+            final int index = pair.indexOf('=');
+            final String key;
+            final String value;
+            if (index > 0) {
+                key = pair.substring(0, index);
+                value = pair.substring(index+1);
+            } else {
+                key = pair;
+                value = "";
+            }
+
+            query.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+        }
+
+        return query;
     }
 }

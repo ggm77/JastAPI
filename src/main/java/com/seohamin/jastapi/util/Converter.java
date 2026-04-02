@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 
 public class Converter {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    public static final ObjectMapper objectMapper = new ObjectMapper();
 
     // 인스턴스화 방지
     private Converter() {}

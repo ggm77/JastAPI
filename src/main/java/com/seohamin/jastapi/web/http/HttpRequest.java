@@ -1,11 +1,15 @@
 package com.seohamin.jastapi.web.http;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Http 요청에 대한 정보를 저장할 클래스
  */
 public class HttpRequest {
     private String method;
     private String path;
+    private Map<String, List<String>> query;
     private String version;
     private HttpHeader header;
     private byte[] body;
@@ -14,6 +18,7 @@ public class HttpRequest {
     public HttpRequest() {
         this.method = null;
         this.path = null;
+        this.query = null;
         this.version = null;
         this.header = null;
         this.body = null;
@@ -26,6 +31,7 @@ public class HttpRequest {
     ) {
         this.method = method;
         this.path = path;
+        this.query = null;
         this.version = version;
         this.header = null;
         this.body = null;
@@ -39,6 +45,7 @@ public class HttpRequest {
     ) {
         this.method = method;
         this.path = path;
+        this.query = null;
         this.version = version;
         this.header = header;
         this.body = null;
@@ -53,6 +60,23 @@ public class HttpRequest {
     ) {
         this.method = method;
         this.path = path;
+        this.query = null;
+        this.version = version;
+        this.header = header;
+        this.body = body;
+    }
+
+    public HttpRequest(
+            final String method,
+            final String path,
+            final Map<String, List<String>> query,
+            final String version,
+            final HttpHeader header,
+            final byte[] body
+    ) {
+        this.method = method;
+        this.path = path;
+        this.query = null;
         this.version = version;
         this.header = header;
         this.body = body;
@@ -64,6 +88,10 @@ public class HttpRequest {
 
     public String getPath() {
         return path;
+    }
+
+    public Map<String, List<String>> getQuery() {
+        return query;
     }
 
     public String getVersion() {
@@ -78,23 +106,27 @@ public class HttpRequest {
         return body;
     }
 
-    public String setMethod(final String method) {
-        return this.method = method;
+    public void setMethod(final String method) {
+        this.method = method;
     }
 
-    public String setPath(final String path) {
-        return this.path = path;
+    public void setPath(final String path) {
+        this.path = path;
     }
 
-    public String setVersion(final String version) {
-        return this.version = version;
+    public void setQuery(final Map<String, List<String>> query) {
+        this.query = query;
     }
 
-    public HttpHeader setHeader(final HttpHeader header) {
-        return this.header = header;
+    public void setVersion(final String version) {
+        this.version = version;
     }
 
-    public byte[] setBody(final byte[] body) {
-        return this.body = body;
+    public void setHeader(final HttpHeader header) {
+        this.header = header;
+    }
+
+    public void setBody(final byte[] body) {
+        this.body = body;
     }
 }
