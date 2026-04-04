@@ -60,7 +60,7 @@ public class Dispatcher {
         final RouteDto routeDto = Container.getBean(Router.class).getRoute(httpMethod, path);
 
         if (routeDto == null) {
-            return ErrorResponse.createBadRequest(version);
+            return ErrorResponse.createNotFound(version);
         }
 
         final RouteInfo routeInfo = routeDto.getRouteInfo();
