@@ -9,6 +9,7 @@ import com.seohamin.jastapi.web.mapping.Router;
 import com.seohamin.jastapi.web.mapping.dto.ParameterDto;
 import com.seohamin.jastapi.web.mapping.dto.ParameterSource;
 import com.seohamin.jastapi.web.mapping.dto.RouteDto;
+import com.seohamin.jastapi.web.mapping.dto.RouteInfo;
 
 import java.util.Collections;
 import java.util.List;
@@ -62,10 +63,11 @@ public class Dispatcher {
             return ErrorResponse.createBadRequest(version);
         }
 
+        final RouteInfo routeInfo = routeDto.getRouteInfo();
         final Object result;
         final byte[] body;
         try {
-            final List<ParameterDto> parameters = routeDto.getParameters();
+            final List<ParameterDto> parameters = routeInfo.getParameters();
             final Object[] args = new Object[parameters.size()];
 
             for (int i = 0; i < parameters.size(); i++) {
@@ -74,9 +76,9 @@ public class Dispatcher {
                 if (parameterDto.getParameterSource().equals(ParameterSource.BODY)) {
                     args[i] = Converter.objectMapper.readValue(requestBody, parameterDto.getType());
                 }
-//                else if (parameterDto.getParameterSource().equals(ParameterSource.PARAM)) {
-//
-//                }
+                else if (parameterDto.getParameterSource().equals(ParameterSource.PARAM)) {
+                    args[i] = routeDto.getPathVariable().get(parameterDto.getAnnotationValue());
+                }
                 else if (parameterDto.getParameterSource().equals(ParameterSource.QUERY)) {
                     if (query == null) {
                         args[i] = Collections.emptyList();
@@ -86,7 +88,7 @@ public class Dispatcher {
                 }
             }
 
-            result = routeDto.getMethod().invoke(routeDto.getInstance(), args);
+            result = routeInfo.getMethod().invoke(routeInfo.getInstance(), args);
             body = Converter.convertToByte(result);
         } catch (Exception ex) {
             ex.printStackTrace();

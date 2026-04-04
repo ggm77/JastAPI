@@ -3,36 +3,27 @@ package com.seohamin.jastapi.web.mapping;
 import com.seohamin.jastapi.annotation.*;
 import com.seohamin.jastapi.core.Container;
 import com.seohamin.jastapi.web.http.HttpMethod;
-import com.seohamin.jastapi.web.mapping.dto.ParameterDto;
-import com.seohamin.jastapi.web.mapping.dto.ParameterSource;
-import com.seohamin.jastapi.web.mapping.dto.RouteDto;
+import com.seohamin.jastapi.web.mapping.dto.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component // 라우터도 컨테이너에서 빈으로서 관리됨
 public class Router {
 
-    private final Map<String, RouteDto> getRouterMap;
-    private final Map<String, RouteDto> postRouterMap;
-    private final Map<String, RouteDto> patchRouterMap;
-    private final Map<String, RouteDto> deleteRouterMap;
-
-    public Router() {
-        getRouterMap = new HashMap<>();
-        postRouterMap = new HashMap<>();
-        patchRouterMap = new HashMap<>();
-        deleteRouterMap = new HashMap<>();
-    }
+    private final Map<HttpMethod, RouteNodeDto> routerTrieMap = new HashMap<>();
 
     public void init(
             final Map<String, Class<?>> scannedClasses
     ) {
+
+        // 각 Http method에 맞는 루트 생성
+        for (HttpMethod httpMethod : HttpMethod.values()) {
+            routerTrieMap.put(httpMethod, RouteNodeDto.createRootNode());
+        }
+
         for (final String key : scannedClasses.keySet()) {
             final Class<?> clazz = scannedClasses.get(key);
             final Object instance = Container.getBean(clazz);
@@ -55,23 +46,23 @@ public class Router {
                         }
                     }
 
-                    final RouteDto routeDto = new RouteDto(instance, method, parameterDto);
+                    final RouteInfo routeInfo = new RouteInfo(instance, method, parameterDto);
 
                     if (annotation.annotationType().equals(Get.class)) {
                         final Get getAnnotation = (Get) annotation;
-                        addRoute(HttpMethod.GET, getAnnotation.value(), routeDto);
+                        addRoute(HttpMethod.GET, getAnnotation.value(), routeInfo);
                     }
                     else if (annotation.annotationType().equals(Post.class)) {
                         final Post postAnnotation = (Post) annotation;
-                        addRoute(HttpMethod.POST, postAnnotation.value(), routeDto);
+                        addRoute(HttpMethod.POST, postAnnotation.value(), routeInfo);
                     }
                     else if (annotation.annotationType().equals(Patch.class)) {
                         final Patch patchAnnotation = (Patch) annotation;
-                        addRoute(HttpMethod.PATCH, patchAnnotation.value(), routeDto);
+                        addRoute(HttpMethod.PATCH, patchAnnotation.value(), routeInfo);
                     }
                     else if (annotation.annotationType().equals(Delete.class)) {
                         final Delete deleteAnnotation = (Delete) annotation;
-                        addRoute(HttpMethod.DELETE, deleteAnnotation.value(), routeDto);
+                        addRoute(HttpMethod.DELETE, deleteAnnotation.value(), routeInfo);
                     }
                 }
             }
@@ -81,21 +72,43 @@ public class Router {
     public void addRoute(
             final HttpMethod httpMethod,
             final String path,
-            final RouteDto routeDto
+            final RouteInfo routeInfo
     ) {
+        if (
+                httpMethod == null
+                || path == null || path.isBlank()
+                || routeInfo == null
+        ) {
+            return ;
+        }
 
-        if (httpMethod.equals(HttpMethod.GET)) {
-            getRouterMap.put(path, routeDto);
+        RouteNodeDto currentNode = routerTrieMap.get(httpMethod);
+        final List<String> paramNames = new ArrayList<>();
+        for (String segment : splitToSegments(path)) {
+
+            if (segment.startsWith("{") && segment.endsWith("}")) {
+                paramNames.add(segment.substring(1,segment.length()-1));
+
+                if (currentNode.getParamChild() != null) {
+                    currentNode = currentNode.getParamChild();
+                } else {
+                    final RouteNodeDto paramChild = new RouteNodeDto();
+                    currentNode.setParamChild(paramChild);
+                    currentNode = paramChild;
+                }
+            } else {
+                final RouteNodeDto next = currentNode.getChildren().get(segment);
+                if (next != null) {
+                    currentNode = next;
+                } else {
+                    final RouteNodeDto child = new RouteNodeDto();
+                    currentNode.putChildren(segment, child);
+                    currentNode = child;
+                }
+            }
         }
-        else if (httpMethod.equals(HttpMethod.POST)) {
-            postRouterMap.put(path, routeDto);
-        }
-        else if (httpMethod.equals(HttpMethod.PATCH)) {
-            patchRouterMap.put(path, routeDto);
-        }
-        else if (httpMethod.equals(HttpMethod.DELETE)) {
-            deleteRouterMap.put(path, routeDto);
-        }
+        routeInfo.setParamNames(paramNames);
+        currentNode.setRouteInfo(routeInfo);
     }
 
     public RouteDto getRoute(
@@ -106,35 +119,38 @@ public class Router {
             return null;
         }
 
-        if (httpMethod.equals(HttpMethod.GET)) {
-            return getRouterMap.get(path);
+        RouteNodeDto currentNode = routerTrieMap.get(httpMethod);
+        final List<String> requestParams = new ArrayList<>();
+
+        for (String segment : splitToSegments(path)) {
+            final RouteNodeDto next = currentNode.getChildren().get(segment);
+
+            if (next != null) {
+                currentNode = next;
+            } else if (currentNode.getParamChild() != null) {
+                requestParams.add(segment);
+                currentNode = currentNode.getParamChild();
+            } else {
+                return null; // 404
+            }
         }
-        else if (httpMethod.equals(HttpMethod.POST)) {
-            return postRouterMap.get(path);
-        }
-        else if (httpMethod.equals(HttpMethod.PATCH)) {
-            return patchRouterMap.get(path);
-        }
-        else if (httpMethod.equals(HttpMethod.DELETE)) {
-            return deleteRouterMap.get(path);
+        final RouteInfo routeInfo = currentNode.getRouteInfo();
+        final Map<String, String> pathVariable = new HashMap<>();
+        for (int i = 0; i < requestParams.size(); i++) {
+            pathVariable.put(routeInfo.getParamNames().get(i), requestParams.get(i));
         }
 
-        return null;
+        return new RouteDto(routeInfo, pathVariable);
     }
 
-    public Map<String, RouteDto> getGetRouterMap() {
-        return getRouterMap;
-    }
+    private List<String> splitToSegments(String path) {
 
-    public Map<String, RouteDto> getPostRouterMap() {
-        return postRouterMap;
-    }
+        if (path == null || path.isBlank() || path.equals("/")) {
+            return Collections.emptyList();
+        }
 
-    public Map<String, RouteDto> getPatchRouterMap() {
-        return patchRouterMap;
-    }
-
-    public Map<String, RouteDto> getDeleteRouterMap() {
-        return deleteRouterMap;
+        return Arrays.stream(path.split("/"))
+                .filter(segment -> !segment.isBlank())
+                .toList();
     }
 }
