@@ -61,8 +61,8 @@ public class JastApiApplication {
 
                 try (
                         final Socket socket = serverSocket.accept();
-                        final InputStream in = socket.getInputStream();
-                        final OutputStream out = socket.getOutputStream()
+                        final InputStream in = new BufferedInputStream(socket.getInputStream());
+                        final OutputStream out = new BufferedOutputStream(socket.getOutputStream())
                 ) {
                     System.out.println("클라이언트 연결 됨");
 

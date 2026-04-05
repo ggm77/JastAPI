@@ -74,6 +74,11 @@ public class HttpRequestParser {
             int totalRead = 0;
             while (totalRead < contentLength) {
                 int read = in.read(body, totalRead, contentLength - totalRead);
+
+                if (read == -1) {
+                    return null;
+                }
+
                 totalRead += read;
             }
 
