@@ -52,25 +52,25 @@ public class Router {
                     final Parameter[] parameters = method.getParameters();
 
                     // 파라미터 정보 저장할 객체의 리스트 생성
-                    final List<ParameterDto> parameterDto = new ArrayList<>();
+                    final List<ParameterDto> parameterDtos = new ArrayList<>();
 
 
                     // 메서드 파라미터에 붙은 어노테이션을 분석하여 매핑 정보 생성
                     for (final Parameter param : parameters) {
                         // 어노테이션에 따라 적절한 정보 담아서 저장
                         if (param.isAnnotationPresent(RequestBody.class)) {
-                            parameterDto.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.BODY, null));
+                            parameterDtos.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.BODY, null));
+                        } else if (param.isAnnotationPresent(PathVariable.class)) {
+                            final String annotationValue = param.getAnnotation(PathVariable.class).value();
+                            parameterDtos.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.PATH, annotationValue));
                         } else if (param.isAnnotationPresent(RequestParam.class)) {
                             final String annotationValue = param.getAnnotation(RequestParam.class).value();
-                            parameterDto.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.PARAM, annotationValue));
-                        } else if (param.isAnnotationPresent(RequestQuery.class)) {
-                            final String annotationValue = param.getAnnotation(RequestQuery.class).value();
-                            parameterDto.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.QUERY, annotationValue));
+                            parameterDtos.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.PARAM, annotationValue));
                         }
                     }
 
                     // 라우팅 trie에 저장할 객체 생성
-                    final RouteInfo routeInfo = new RouteInfo(instance, method, parameterDto);
+                    final RouteInfo routeInfo = new RouteInfo(instance, method, parameterDtos);
 
                     // Http method에 따라 적절한 trie에 저장
                     if (annotation.annotationType().equals(Get.class)) {
@@ -117,9 +117,9 @@ public class Router {
         // 루트 노드부터 trie 순회
         RouteNodeDto currentNode = routerTrieMap.get(httpMethod);
 
-        // 경로 변수(Path Variable)의 이름을 저장하는 리스트 (예: {id}에서 "id")
+        // path variable의 이름을 저장하는 리스트 (예: {id}에서 "id")
         // 나중에 라우터에서 조회 할 때 사용하므로 요소의 순서가 매우 중요
-        final List<String> paramNames = new ArrayList<>();
+        final List<String> pathVariableNames = new ArrayList<>();
 
         // path를 '/'단위로 잘라서 trie 순회
         for (String segment : splitToSegments(path)) {
@@ -128,19 +128,19 @@ public class Router {
             if (segment.startsWith("{") && segment.endsWith("}")) {
 
                 // 중괄호 삭제한 순수한 이름만 리스트에 추가
-                paramNames.add(segment.substring(1,segment.length()-1));
+                pathVariableNames.add(segment.substring(1,segment.length()-1));
 
                 // 현재 노드에 이미 생성 된 동적 세그먼트(= path variable이 들어갈 자리)가 존재하는 경우
-                if (currentNode.getParamChild() != null) {
+                if (currentNode.getDynamicChild() != null) {
                     // 해당 동적 세그먼트를 다음 노드로 선택
-                    currentNode = currentNode.getParamChild();
+                    currentNode = currentNode.getDynamicChild();
                 } else {
                     // 새로운 노드를 만들고 그걸 현재 노드의 동적 세그먼트 자리에 넣기
-                    final RouteNodeDto paramChild = new RouteNodeDto();
-                    currentNode.setParamChild(paramChild);
+                    final RouteNodeDto dynamicChild = new RouteNodeDto();
+                    currentNode.setDynamicChild(dynamicChild);
 
                     // 생성한 노드를 다음 노드로 선택
-                    currentNode = paramChild;
+                    currentNode = dynamicChild;
                 }
             }
             // path variable이 아닌 정적 세그먼트인 경우
@@ -167,7 +167,7 @@ public class Router {
         }
 
         // path variable의 이름들을 라우트 정보에 추가
-        routeInfo.setParamNames(paramNames);
+        routeInfo.setPathVariableNames(pathVariableNames);
 
         // 현재 노드(= 최종 도착한 목적지)에 라우트 정보를 저장
         currentNode.setRouteInfo(routeInfo);
@@ -192,7 +192,7 @@ public class Router {
         RouteNodeDto currentNode = routerTrieMap.get(httpMethod);
 
         // path variable 자리에 적힌 실제 값을 저장할 리스트
-        final List<String> requestParams = new ArrayList<>();
+        final List<String> pathVariableValues = new ArrayList<>();
 
         // path를 '/' 기준으로 잘라 trie 순회
         for (String segment : splitToSegments(path)) {
@@ -206,12 +206,12 @@ public class Router {
                 currentNode = next;
             }
             // 존재하지 않지만 동적 세그먼트는 존재하는 경우
-            else if (currentNode.getParamChild() != null) {
+            else if (currentNode.getDynamicChild() != null) {
                 // path variable 자리에 적힌 실제 값을 리스트에 추가
-                requestParams.add(segment);
+                pathVariableValues.add(segment);
 
                 // 해당 노드를 다음 노드로 선택
-                currentNode = currentNode.getParamChild();
+                currentNode = currentNode.getDynamicChild();
             }
             // 아무 노드도 못 찾은 경우 null 반환해서 디스패쳐에서 404 던지게 하기
             else {
@@ -223,13 +223,13 @@ public class Router {
         final RouteInfo routeInfo = currentNode.getRouteInfo();
 
         // path variable 이름들을 키로, 실제 요청한 값을 value로 하는 맵 생성
-        final Map<String, String> pathVariable = new HashMap<>();
-        for (int i = 0; i < requestParams.size(); i++) {
-            pathVariable.put(routeInfo.getParamNames().get(i), requestParams.get(i));
+        final Map<String, String> pathVariables = new HashMap<>();
+        for (int i = 0; i < pathVariableValues.size(); i++) {
+            pathVariables.put(routeInfo.getPathVariableNames().get(i), pathVariableValues.get(i));
         }
 
         // DTO로 만들어서 리턴
-        return new RouteDto(routeInfo, pathVariable);
+        return new RouteDto(routeInfo, pathVariables);
     }
 
     /**

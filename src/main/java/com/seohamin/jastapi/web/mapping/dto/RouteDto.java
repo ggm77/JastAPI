@@ -7,21 +7,21 @@ import java.util.Map;
  */
 public class RouteDto {
     private final RouteInfo routeInfo;
-    private final Map<String, String> pathVariable;
+    private final Map<String, String> pathVariables;
 
     public RouteDto(
             RouteInfo routeInfo,
-            Map<String, String> pathVariable
+            Map<String, String> pathVariables
     ) {
         this.routeInfo = routeInfo;
-        this.pathVariable = pathVariable;
+        this.pathVariables = pathVariables;
     }
 
     public RouteInfo getRouteInfo() {
         return routeInfo;
     }
 
-    public Map<String, String> getPathVariable() {
-        return pathVariable;
+    public Map<String, String> getPathVariables() {
+        return pathVariables;
     }
 }

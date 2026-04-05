@@ -10,7 +10,7 @@ public class RouteInfo {
     private Object instance;
     private Method method;
     private List<ParameterDto> parameters;
-    private List<String> paramNames;
+    private List<String> pathVariableNames;
 
     public RouteInfo(
             final Object instance,
@@ -34,11 +34,11 @@ public class RouteInfo {
         return parameters;
     }
 
-    public List<String> getParamNames() {
-        return paramNames;
+    public List<String> getPathVariableNames() {
+        return pathVariableNames;
     }
 
-    public void setParamNames(List<String> paramNames) {
-        this.paramNames = paramNames;
+    public void setPathVariableNames(List<String> pathVariableNames) {
+        this.pathVariableNames = pathVariableNames;
     }
 }

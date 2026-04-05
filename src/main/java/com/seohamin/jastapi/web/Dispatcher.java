@@ -81,13 +81,13 @@ public class Dispatcher {
                     // 바디 타입에 맞춰서 자동으로 타입 변환
                     args[i] = Converter.objectMapper.readValue(requestBody, parameterDto.getType());
                 }
+                // 해당 파라미터가 PathVariable일 때
+                else if (parameterDto.getParameterSource().equals(ParameterSource.PATH)) {
+                    // 무조건 String으로만 반환
+                    args[i] = routeDto.getPathVariables().get(parameterDto.getAnnotationValue());
+                }
                 // 해당 파라미터가 RequestParam일 때
                 else if (parameterDto.getParameterSource().equals(ParameterSource.PARAM)) {
-                    // 무조건 String으로만 반환
-                    args[i] = routeDto.getPathVariable().get(parameterDto.getAnnotationValue());
-                }
-                // 해당 파라미터가 RequestQuery일 때
-                else if (parameterDto.getParameterSource().equals(ParameterSource.QUERY)) {
                     // 쿼리에 키만 적혀있고, 값은 없는 경우
                     if (query == null) {
                         // 빈 리스트 반환

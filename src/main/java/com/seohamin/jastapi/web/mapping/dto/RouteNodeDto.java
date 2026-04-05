@@ -11,7 +11,7 @@ public class RouteNodeDto {
     private Map<String, RouteNodeDto> children = new HashMap<>();
 
     // 동적 세그먼트를 위한 필드
-    private RouteNodeDto paramChild;
+    private RouteNodeDto dynamicChild;
 
     // 루트 노드인지 여부
     private boolean isRoot = false;
@@ -42,8 +42,8 @@ public class RouteNodeDto {
         return children;
     }
 
-    public RouteNodeDto getParamChild() {
-        return paramChild;
+    public RouteNodeDto getDynamicChild() {
+        return dynamicChild;
     }
 
     public boolean getIsRoot() {
@@ -54,8 +54,8 @@ public class RouteNodeDto {
         return routeInfo;
     }
 
-    public void setParamChild(RouteNodeDto paramChild) {
-        this.paramChild = paramChild;
+    public void setDynamicChild(RouteNodeDto dynamicChild) {
+        this.dynamicChild = dynamicChild;
     }
 
     // 루트 노드로 변경하는건 이 클래스 내부에서만 가능
