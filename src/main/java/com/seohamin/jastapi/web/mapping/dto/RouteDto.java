@@ -1,35 +1,27 @@
 package com.seohamin.jastapi.web.mapping.dto;
 
-import java.lang.reflect.Method;
-import java.util.List;
+import java.util.Map;
 
 /**
- * 라우터에 저장될 정보의 클래스
+ * 라우트 정보와 path variable 정보를 다 같이 디스패쳐로 전달하기 위한 DTO
  */
 public class RouteDto {
-    private Object instance;
-    private Method method;
-    private List<ParameterDto> parameters;
+    private final RouteInfo routeInfo;
+    private final Map<String, String> pathVariables;
 
     public RouteDto(
-            final Object instance,
-            final Method method,
-            final List<ParameterDto> parameters
+            RouteInfo routeInfo,
+            Map<String, String> pathVariables
     ) {
-        this.instance = instance;
-        this.method = method;
-        this.parameters = parameters;
+        this.routeInfo = routeInfo;
+        this.pathVariables = pathVariables;
     }
 
-    public Object getInstance() {
-        return instance;
+    public RouteInfo getRouteInfo() {
+        return routeInfo;
     }
 
-    public Method getMethod() {
-        return method;
-    }
-
-    public List<ParameterDto> getParameters() {
-        return parameters;
+    public Map<String, String> getPathVariables() {
+        return pathVariables;
     }
 }

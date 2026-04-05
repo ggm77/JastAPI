@@ -9,6 +9,7 @@ import com.seohamin.jastapi.web.mapping.Router;
 import com.seohamin.jastapi.web.mapping.dto.ParameterDto;
 import com.seohamin.jastapi.web.mapping.dto.ParameterSource;
 import com.seohamin.jastapi.web.mapping.dto.RouteDto;
+import com.seohamin.jastapi.web.mapping.dto.RouteInfo;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,43 +57,61 @@ public class Dispatcher {
             httpMethod = null;
         }
 
+        // 컨테이너에서 라우터 빈에 접근해서 http method와 request path에 맞는 라우트 찾기
         final RouteDto routeDto = Container.getBean(Router.class).getRoute(httpMethod, path);
 
+        // 못 찾으면 404 던짐
         if (routeDto == null) {
-            return ErrorResponse.createBadRequest(version);
+            return ErrorResponse.createNotFound(version);
         }
 
+        final RouteInfo routeInfo = routeDto.getRouteInfo(); // 실제 객체와 메소드 정보, 파라미터 정보가 담긴 객체 추출
         final Object result;
         final byte[] body;
         try {
-            final List<ParameterDto> parameters = routeDto.getParameters();
+            final List<ParameterDto> parameters = routeInfo.getParameters();
             final Object[] args = new Object[parameters.size()];
 
+            // 미리 서버 켜질 때 분석 했던 메소드의 파라미터 정보에 맞게 파라미터 값 찾기
             for (int i = 0; i < parameters.size(); i++) {
                 final ParameterDto parameterDto = parameters.get(i);
 
+                // 해당 파라미터가 RequestBody일 때
                 if (parameterDto.getParameterSource().equals(ParameterSource.BODY)) {
+                    // 바디 타입에 맞춰서 자동으로 타입 변환
                     args[i] = Converter.objectMapper.readValue(requestBody, parameterDto.getType());
                 }
-//                else if (parameterDto.getParameterSource().equals(ParameterSource.PARAM)) {
-//
-//                }
-                else if (parameterDto.getParameterSource().equals(ParameterSource.QUERY)) {
+                // 해당 파라미터가 PathVariable일 때
+                else if (parameterDto.getParameterSource().equals(ParameterSource.PATH)) {
+                    // 무조건 String으로만 반환
+                    args[i] = routeDto.getPathVariables().get(parameterDto.getAnnotationValue());
+                }
+                // 해당 파라미터가 RequestParam일 때
+                else if (parameterDto.getParameterSource().equals(ParameterSource.PARAM)) {
+                    // 쿼리에 키만 적혀있고, 값은 없는 경우
                     if (query == null) {
+                        // 빈 리스트 반환
                         args[i] = Collections.emptyList();
-                    } else {
+                    }
+                    // 키, 값이 모두 있는 경우
+                    else {
+                        // 요소가 몇개든 List<String>으로 반환
                         args[i] = query.get(parameterDto.getAnnotationValue());
                     }
                 }
             }
 
-            result = routeDto.getMethod().invoke(routeDto.getInstance(), args);
+            // 리플랙션으로 라우터에서 찾은 메소드 실행
+            result = routeInfo.getMethod().invoke(routeInfo.getInstance(), args);
+
+            // 실행 결과 byte 배열로 변환
             body = Converter.convertToByte(result);
         } catch (Exception ex) {
             ex.printStackTrace();
             return ErrorResponse.createBadRequest(version);
         }
 
+        // response에 넣을 헤더 제작
         final HttpHeader responseHeader = new HttpHeader();
         responseHeader.add("Content-Type", "application/json; charset=utf-8");
         responseHeader.add("Content-Length", String.valueOf(body.length));
@@ -101,8 +120,9 @@ public class Dispatcher {
         responseHeader.add("Cache-Control", "no-cache, no-store, must-revalidate");
         responseHeader.add("Date", HttpTime.getCurrentTime());
 
-        final HttpResponse httpResponse = new HttpResponse();
 
+        // http response 객체 필드 채우기
+        final HttpResponse httpResponse = new HttpResponse();
         httpResponse.setStatusCode(HttpStatus.OK.getStatusCode());
         httpResponse.setStatusMessage(HttpStatus.OK.getStatusMessage());
         httpResponse.setVersion(version);

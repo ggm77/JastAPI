@@ -18,6 +18,9 @@ public class Container {
     // 컨테이너
     private static final Map<Class<?>, Object> beans = new HashMap<>();
 
+    // 인터페이스와 구현체 맵 (인터페이스는 빈 등록 안하기 때문)
+    private static final Map<Class<?>, Class<?>> interfaceToImplMap = new HashMap<>();
+
     // 순환 참조 방지용
     private static final Set<Class<?>> isCreation = new HashSet<>();
 
@@ -33,6 +36,22 @@ public class Container {
         // 라우터 생성 및 저장
         final Router router = new Router();
         beans.put(Router.class, router);
+
+        // 인터페이스와 구현체 맵 생성
+        for (final String key : scannedClasses.keySet()) {
+            final Class<?> clazz = scannedClasses.get(key);
+
+            for (Class<?> interfaceClass : clazz.getInterfaces()) {
+                if (interfaceToImplMap.containsKey(interfaceClass)) {
+                    throw new RuntimeException("[ERROR] " + interfaceClass.getName() +
+                            "의 구현체가 중복됩니다: " + interfaceToImplMap.get(interfaceClass).getName() +
+                            ", " + clazz.getName());
+                }
+
+                // 맵에 해당 인터페이스의 구현체를 매핑
+                interfaceToImplMap.put(interfaceClass, clazz);
+            }
+        }
 
         // 빈 등록
         for (final String key : scannedClasses.keySet()) {
@@ -58,13 +77,21 @@ public class Container {
      */
     public static <T> T getBean(final Class<T> clazz) {
 
-        // 컴포넌트 아닌 경우 (빈 등록 대상이 아닌경우) null 반환
-        if (!clazz.isAnnotationPresent(Component.class)) {
-            return null;
+        if (clazz.isInterface()) {
+            final Class<?> implClass = interfaceToImplMap.get(clazz);
+            if (implClass != null) {
+                final Object implInstance = getBean(implClass);
+                return clazz.cast(implInstance);
+            }
         }
 
         if (beans.containsKey(clazz)) {
             return clazz.cast(beans.get(clazz));
+        }
+
+        // 컴포넌트 아닌 경우 (빈 등록 대상이 아닌경우) null 반환
+        if (!clazz.isAnnotationPresent(Component.class)) {
+            return null;
         }
 
         if (isCreation.contains(clazz)) {
