@@ -11,6 +11,8 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * JastAPI를 동작시키는 클래스
@@ -40,6 +42,8 @@ public class JastApiApplication {
         // 컨테이너 초기화로 라우터까지 자동 생성
         Container.init(Scanner.scan(sourceClass));
 
+        ExecutorService executor = Executors.newFixedThreadPool(20);
+
         try (ServerSocket serverSocket = new ServerSocket()) {
 
             final InetSocketAddress inetSocketAddress;
@@ -59,24 +63,41 @@ public class JastApiApplication {
             while (true) {
                 System.out.println("연결 대기중...");
 
-                try (
-                        final Socket socket = serverSocket.accept();
-                        final InputStream in = new BufferedInputStream(socket.getInputStream());
-                        final OutputStream out = new BufferedOutputStream(socket.getOutputStream())
-                ) {
+                final Socket socket = serverSocket.accept();
+
+                executor.submit(() -> {
                     System.out.println("클라이언트 연결 됨");
 
-                    final HttpRequest httpRequest = HttpRequestParser.parse(in);
+                    try (
+                            final InputStream in = new BufferedInputStream(socket.getInputStream());
+                            final OutputStream out = new BufferedOutputStream(socket.getOutputStream())
+                    ) {
 
-                    final HttpResponse httpResponse = Dispatcher.dispatch(httpRequest);
+                        final HttpRequest httpRequest = HttpRequestParser.parse(in);
 
-                    out.write(httpResponse.toBytes());
-                    out.flush();
-                }
+                        final HttpResponse httpResponse = Dispatcher.dispatch(httpRequest);
+
+                        if (httpResponse != null) {
+                            out.write(httpResponse.toBytes());
+                            out.flush();
+                        }
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                    finally {
+                        try {
+                            socket.close();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                });
             }
 
         } catch (final IOException ex) {
             throw new RuntimeException(ex);
+        } finally {
+            executor.shutdown();
         }
     }
 }
