@@ -25,6 +25,14 @@ public class HttpHeader {
     }
 
     /**
+     * 헤더 맵에 대한 게터
+     * @return 헤더 맵
+     */
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    /**
      * 헤더 맵에서 content-length 헤더의 값을 가져오는 메서드.
      * @return content-length 헤더의 값
      */

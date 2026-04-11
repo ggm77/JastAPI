@@ -115,8 +115,7 @@ public class Dispatcher {
         final HttpHeader responseHeader = new HttpHeader();
         responseHeader.add("Content-Type", "application/json; charset=utf-8");
         responseHeader.add("Content-Length", String.valueOf(body.length));
-//        responseHeader.add("Connection", "keep-alive");
-        responseHeader.add("Connection", "close"); // while문을 통해 순차적으로 처리하기 때문
+        responseHeader.add("Connection", "keep-alive");
         responseHeader.add("Cache-Control", "no-cache, no-store, must-revalidate");
         responseHeader.add("Date", HttpTime.getCurrentTime());
 

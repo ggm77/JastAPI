@@ -11,6 +11,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -68,19 +69,31 @@ public class JastApiApplication {
                 executor.submit(() -> {
                     System.out.println("클라이언트 연결 됨");
 
-                    try (
-                            final InputStream in = new BufferedInputStream(socket.getInputStream());
-                            final OutputStream out = new BufferedOutputStream(socket.getOutputStream())
-                    ) {
+                    try {
 
-                        final HttpRequest httpRequest = HttpRequestParser.parse(in);
+                        // 소켓 타입아웃 5초
+                        socket.setSoTimeout(5000);
 
-                        final HttpResponse httpResponse = Dispatcher.dispatch(httpRequest);
+                        final InputStream in = new BufferedInputStream(socket.getInputStream());
+                        final OutputStream out = new BufferedOutputStream(socket.getOutputStream());
 
-                        if (httpResponse != null) {
-                            out.write(httpResponse.toBytes());
-                            out.flush();
+                        while (!socket.isClosed()) {
+                            final HttpRequest httpRequest = HttpRequestParser.parse(in);
+
+                            final HttpResponse httpResponse = Dispatcher.dispatch(httpRequest);
+
+                            if (httpResponse != null) {
+                                out.write(httpResponse.toBytes());
+                                out.flush();
+                            }
+
+                            final String connectionHeaderValue = httpResponse.getHeader().getHeaders().get("connection");
+                            if ("close".equalsIgnoreCase(connectionHeaderValue)) {
+                                break;
+                            }
                         }
+                    } catch (SocketTimeoutException ex) {
+                        System.out.println("Keep-alive 타임아웃 발생.");
                     } catch (IOException ex) {
                         ex.printStackTrace();
                     }
