@@ -87,7 +87,7 @@ public class JastApiApplication {
                                 out.flush();
                             }
 
-                            final String connectionHeaderValue = httpResponse.getHeader().getHeaders().get("connection");
+                            final String connectionHeaderValue = httpResponse.getHeader().getHeaders().get("connection").getFirst();
                             if ("close".equalsIgnoreCase(connectionHeaderValue)) {
                                 break;
                             }

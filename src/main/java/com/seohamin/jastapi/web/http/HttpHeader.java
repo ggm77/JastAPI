@@ -1,6 +1,8 @@
 package com.seohamin.jastapi.web.http;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -9,7 +11,7 @@ import java.util.Map;
 public class HttpHeader {
 
     // 헤더 정보 담을 맵
-    private final Map<String, String> headers = new HashMap<>();
+    private final Map<String, List<String>> headers = new HashMap<>();
 
     /**
      * 헤더 맵에 해더 정보를 추가하는 메서드.
@@ -21,14 +23,14 @@ public class HttpHeader {
             final String name,
             final String value
     ) {
-        headers.put(name.toLowerCase(), value);
+        headers.computeIfAbsent(name.toLowerCase(), k -> new ArrayList<>()).add(value);
     }
 
     /**
      * 헤더 맵에 대한 게터
      * @return 헤더 맵
      */
-    public Map<String, String> getHeaders() {
+    public Map<String, List<String>> getHeaders() {
         return headers;
     }
 
@@ -37,7 +39,12 @@ public class HttpHeader {
      * @return content-length 헤더의 값
      */
     public String getContentLength() {
-        return headers.get("content-length");
+        final List<String> values = headers.get("content-length");
+        if (values != null && !values.isEmpty()) {
+            return values.getFirst();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -47,7 +54,13 @@ public class HttpHeader {
     public String toString() {
         final StringBuilder builder = new StringBuilder();
         headers.forEach((key, value) -> {
-            builder.append(key).append(": ").append(value).append("\n");
+            builder.append(key).append(": ");
+
+            if (value != null) {
+                builder.append(String.join(", ", value));
+            }
+
+            builder.append("\n");
         });
         return builder.toString();
     }
@@ -59,7 +72,13 @@ public class HttpHeader {
     public String toCrlfString() {
         final StringBuilder builder = new StringBuilder();
         headers.forEach((key, value) -> {
-            builder.append(key).append(": ").append(value).append("\r\n");
+            builder.append(key).append(": ");
+
+            if (value != null) {
+                builder.append(String.join(", ", value));
+            }
+
+            builder.append("\r\n");
         });
         return builder.toString();
     }

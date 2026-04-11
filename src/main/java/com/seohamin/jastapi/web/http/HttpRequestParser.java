@@ -57,8 +57,8 @@ public class HttpRequestParser {
 
             final int colonIdx = line.indexOf(':');
             if (colonIdx != -1) {
-                final String key = line.substring(0, colonIdx);
-                final String value = line.substring(colonIdx + 1);
+                final String key = line.substring(0, colonIdx).trim();
+                final String value = line.substring(colonIdx + 1).trim();
 
                 httpHeader.add(key, value);
             }
