@@ -31,7 +31,7 @@ public class HttpRequestParser {
         }
 
         final String[] requestLine = rawLine.split(" ");
-        final String rawPath = URLDecoder.decode(requestLine[1], StandardCharsets.UTF_8);
+        final String rawPath = requestLine[1];
         final int queryStringIndex = rawPath.indexOf('?');
 
         if (queryStringIndex != -1) {
@@ -127,10 +127,10 @@ public class HttpRequestParser {
             final String key;
             final String value;
             if (index > 0) {
-                key = pair.substring(0, index);
-                value = pair.substring(index+1);
+                key = URLDecoder.decode(pair.substring(0, index), StandardCharsets.UTF_8);
+                value = URLDecoder.decode(pair.substring(index+1), StandardCharsets.UTF_8);
             } else {
-                key = pair;
+                key = URLDecoder.decode(pair, StandardCharsets.UTF_8);
                 value = "";
             }
 
