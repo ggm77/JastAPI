@@ -67,7 +67,7 @@ public class ErrorResponse {
         final HttpHeader header = new HttpHeader();
         header.add("Content-Type", "application/json");
         header.add("Date", HttpTime.getCurrentTime());
-        header.add("Connection", "keep-alive");
+        header.add("Connection", "close");
         header.add("Content-Length", String.valueOf(contentLength));
         header.add("Cache-Control", "no-cache, no-store");
 

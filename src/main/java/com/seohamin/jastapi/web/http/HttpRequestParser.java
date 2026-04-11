@@ -31,7 +31,7 @@ public class HttpRequestParser {
         }
 
         final String[] requestLine = rawLine.split(" ");
-        final String rawPath = URLDecoder.decode(requestLine[1], StandardCharsets.UTF_8);
+        final String rawPath = requestLine[1];
         final int queryStringIndex = rawPath.indexOf('?');
 
         if (queryStringIndex != -1) {
@@ -57,8 +57,8 @@ public class HttpRequestParser {
 
             final int colonIdx = line.indexOf(':');
             if (colonIdx != -1) {
-                final String key = line.substring(0, colonIdx);
-                final String value = line.substring(colonIdx + 1);
+                final String key = line.substring(0, colonIdx).trim();
+                final String value = line.substring(colonIdx + 1).trim();
 
                 httpHeader.add(key, value);
             }
@@ -74,6 +74,11 @@ public class HttpRequestParser {
             int totalRead = 0;
             while (totalRead < contentLength) {
                 int read = in.read(body, totalRead, contentLength - totalRead);
+
+                if (read == -1) {
+                    return null;
+                }
+
                 totalRead += read;
             }
 
@@ -122,10 +127,10 @@ public class HttpRequestParser {
             final String key;
             final String value;
             if (index > 0) {
-                key = pair.substring(0, index);
-                value = pair.substring(index+1);
+                key = URLDecoder.decode(pair.substring(0, index), StandardCharsets.UTF_8);
+                value = URLDecoder.decode(pair.substring(index+1), StandardCharsets.UTF_8);
             } else {
-                key = pair;
+                key = URLDecoder.decode(pair, StandardCharsets.UTF_8);
                 value = "";
             }
 
