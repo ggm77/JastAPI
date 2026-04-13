@@ -10,10 +10,12 @@ import java.sql.SQLException;
 @Component
 public class MariaDbConnectionProvider implements ConnectionProvider {
 
-    private final static String URL = "jdbc:mariadb://localhost:3306/jastapi";
-    private final static String USER = "user";
+    // DB 연결 정보
+    private final static String URL = "jdbc:mariadb://localhost:3306/jastapi_example";
+    private final static String USER = "jastapi";
     private final static String PASSWORD = "1234";
 
+    // DB 커넥션 얻는 메서드
     @Override
     public Connection getConnection() {
         try {
@@ -24,6 +26,7 @@ public class MariaDbConnectionProvider implements ConnectionProvider {
         }
     }
 
+    // DB 커넥션 끊는 메서드
     @Override
     public void releaseConnection(Connection connection) {
         try {
