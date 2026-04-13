@@ -18,6 +18,7 @@ public class PostRepository {
         this.provider = connectionProvider;
     }
 
+    // Post 객체를 그대로 DB에 저장하는 메서드
     public Long save(final Post post) {
         final String insertSql = "INSERT INTO post (title, content, author, password) VALUES (?,?,?,?)";
         final String findSql = "SELECT LAST_INSERT_ID()";
@@ -46,6 +47,7 @@ public class PostRepository {
         return null;
     }
 
+    // id로 DB에서 게시글 조회하는 메서드
     public Post findById(final Long id) {
         final String findByIdSql = "SELECT id, title, content, author, password FROM post WHERE id = ?";
 
@@ -75,6 +77,7 @@ public class PostRepository {
         return null;
     }
 
+    // 인자로 받은 Post를 적절히 수정하는 메서드
     public Post update(final Post post) {
         final String updateSql = "UPDATE post SET title=?, content=?, author=?, password=? WHERE id=?";
 
@@ -99,5 +102,27 @@ public class PostRepository {
         }
 
         return null;
+    }
+
+    // 특정 id의 게시글을 삭제하는 메서드
+    public boolean delete(final Long id) {
+        final String deleteSql = "DELETE FROM post WHERE id=?";
+
+        try (
+                final Connection conn = provider.getConnection();
+                final PreparedStatement pst = conn.prepareStatement(deleteSql)
+        ) {
+            pst.setLong(1, id);
+
+            int rowAffected = pst.executeUpdate();
+
+            if (rowAffected > 0) {
+                return true;
+            }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return false;
     }
 }
