@@ -7,26 +7,35 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * This class provides the connection with MariaDB.
+ */
 @Component
 public class MariaDbConnectionProvider implements ConnectionProvider {
 
-    // DB 연결 정보
+    // DB 연결 정보 | DB connection info
     private final static String URL = "jdbc:mariadb://localhost:3306/jastapi_example";
     private final static String USER = "jastapi";
     private final static String PASSWORD = "1234";
 
-    // DB 커넥션 얻는 메서드
+    /**
+     * Returns the connection of DB.
+     * @return connection with DB.
+     */
     @Override
     public Connection getConnection() {
         try {
             return DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException ex) {
-            System.err.println("[ERROR] MariaDB 연결 실패: " + ex.getMessage());
+            System.err.println("[ERROR] Failed to connect MariaDB: " + ex.getMessage());
             return null;
         }
     }
 
-    // DB 커넥션 끊는 메서드
+    /**
+     * Releases the connection with DB.
+     * @param connection connection to release.
+     */
     @Override
     public void releaseConnection(Connection connection) {
         try {
@@ -34,7 +43,7 @@ public class MariaDbConnectionProvider implements ConnectionProvider {
                 connection.close();
             }
         } catch (SQLException ex) {
-            System.err.println("[ERROR] 연결 해제 중 오류 발생: " + ex.getMessage());
+            System.err.println("[ERROR] Error occurred while release the connection with MariaDB: " + ex.getMessage());
         }
     }
 }
