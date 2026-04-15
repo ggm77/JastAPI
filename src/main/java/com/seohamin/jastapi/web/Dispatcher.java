@@ -1,7 +1,6 @@
 package com.seohamin.jastapi.web;
 
 import com.seohamin.jastapi.annotation.core.Component;
-import com.seohamin.jastapi.core.Container;
 import com.seohamin.jastapi.util.Converter;
 import com.seohamin.jastapi.web.http.ErrorResponse;
 import com.seohamin.jastapi.web.http.HttpTime;
@@ -22,10 +21,10 @@ import java.util.Map;
 @Component
 public class Dispatcher {
 
-    private final Container container;
+    private final Router router;
 
-    public Dispatcher(Container container) {
-        this.container = container;
+    public Dispatcher(Router router) {
+        this.router = router;
     }
 
     /**
@@ -63,7 +62,7 @@ public class Dispatcher {
         }
 
         // 컨테이너에서 라우터 빈에 접근해서 http method와 request path에 맞는 라우트 찾기
-        final RouteDto routeDto = container.getBean(Router.class).getRoute(httpMethod, path);
+        final RouteDto routeDto = router.getRoute(httpMethod, path);
 
         // 못 찾으면 404 던짐
         if (routeDto == null) {
