@@ -66,6 +66,8 @@ public class Router {
                         } else if (param.isAnnotationPresent(RequestParam.class)) {
                             final String annotationValue = param.getAnnotation(RequestParam.class).value();
                             parameterDtos.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.PARAM, annotationValue));
+                        } else {
+                            parameterDtos.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.DEFAULT, null));
                         }
                     }
 

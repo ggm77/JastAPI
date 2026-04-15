@@ -68,6 +68,7 @@ public class Dispatcher {
         final RouteInfo routeInfo = routeDto.getRouteInfo(); // 실제 객체와 메소드 정보, 파라미터 정보가 담긴 객체 추출
         final Object result;
         final byte[] body;
+        final boolean isHttpResponse;
         try {
             final List<ParameterDto> parameters = routeInfo.getParameters();
             final Object[] args = new Object[parameters.size()];
@@ -99,36 +100,53 @@ public class Dispatcher {
                         args[i] = query.get(parameterDto.getAnnotationValue());
                     }
                 }
+                // 해당 파라미터의 타입이 HttpRequest인 경우
+                else if (parameterDto.getType().isAssignableFrom(HttpRequest.class)) {
+                    // 요청 받은 request 그대로 전달
+                    args[i] = httpRequest;
+                }
             }
 
             // 리플랙션으로 라우터에서 찾은 메소드 실행
             result = routeInfo.getMethod().invoke(routeInfo.getInstance(), args);
 
-            // 실행 결과 byte 배열로 변환
-            body = Converter.convertToByte(result);
+            // 결과가 HttpResponse인지 여부
+            isHttpResponse = result instanceof HttpResponse;
+
+            if (!isHttpResponse) {
+                // 실행 결과 byte 배열로 변환
+                body = Converter.convertToByte(result);
+            } else {
+                body = new byte[0];
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             return ErrorResponse.createBadRequest(version);
         }
 
-        // response에 넣을 헤더 제작
-        final HttpHeader responseHeader = new HttpHeader();
-        responseHeader.add("Content-Type", "application/json; charset=utf-8");
-        responseHeader.add("Content-Length", String.valueOf(body.length));
-        responseHeader.add("Connection", "keep-alive");
-        responseHeader.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        responseHeader.add("Date", HttpTime.getCurrentTime());
+        // 메서드 호출 결과가 HttpResponse인 경우 캐스팅해서 바로 전송
+        if (isHttpResponse) {
+            return (HttpResponse) result;
+        } else {
+            // response에 넣을 헤더 제작
+            final HttpHeader responseHeader = new HttpHeader();
+            responseHeader.add("Content-Type", "application/json; charset=utf-8");
+            responseHeader.add("Content-Length", String.valueOf(body.length));
+            responseHeader.add("Connection", "keep-alive");
+            responseHeader.add("Cache-Control", "no-cache, no-store, must-revalidate");
+            responseHeader.add("Date", HttpTime.getCurrentTime());
 
 
-        // http response 객체 필드 채우기
-        final HttpResponse httpResponse = new HttpResponse();
-        httpResponse.setStatusCode(HttpStatus.OK.getStatusCode());
-        httpResponse.setStatusMessage(HttpStatus.OK.getStatusMessage());
-        httpResponse.setVersion(version);
-        httpResponse.setBody(body);
-        httpResponse.setHeader(responseHeader);
+            // http response 객체 필드 채우기
+            final HttpResponse httpResponse = new HttpResponse();
+            httpResponse.setStatusCode(HttpStatus.OK.getStatusCode());
+            httpResponse.setStatusMessage(HttpStatus.OK.getStatusMessage());
+            httpResponse.setVersion(version);
+            httpResponse.setBody(body);
+            httpResponse.setHeader(responseHeader);
 
-        return httpResponse;
+            return httpResponse;
+        }
     }
 
 }
