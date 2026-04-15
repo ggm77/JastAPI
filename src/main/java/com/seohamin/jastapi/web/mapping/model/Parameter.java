@@ -1,13 +1,13 @@
-package com.seohamin.jastapi.web.mapping.dto;
+package com.seohamin.jastapi.web.mapping.model;
 
-public class ParameterDto {
+public class Parameter {
 
     private String name;
     private Class<?> type;
     private ParameterSource parameterSource;
     private String annotationValue;
 
-    public ParameterDto(
+    public Parameter(
             final String name,
             final Class<?> type,
             final ParameterSource parameterSource,

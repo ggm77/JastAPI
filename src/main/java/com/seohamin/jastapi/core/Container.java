@@ -1,6 +1,6 @@
 package com.seohamin.jastapi.core;
 
-import com.seohamin.jastapi.annotation.Component;
+import com.seohamin.jastapi.annotation.core.Component;
 import com.seohamin.jastapi.web.mapping.Router;
 
 import java.lang.reflect.Constructor;

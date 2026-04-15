@@ -1,8 +1,4 @@
-package com.seohamin.jastapi.util;
-
-import com.seohamin.jastapi.web.http.HttpHeader;
-import com.seohamin.jastapi.web.http.HttpResponse;
-import com.seohamin.jastapi.web.http.HttpStatus;
+package com.seohamin.jastapi.web.http;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;

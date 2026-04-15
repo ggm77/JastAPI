@@ -1,4 +1,4 @@
-package com.seohamin.jastapi.util;
+package com.seohamin.jastapi.web.http;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;

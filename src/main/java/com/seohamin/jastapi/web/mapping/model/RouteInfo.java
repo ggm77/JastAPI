@@ -1,4 +1,4 @@
-package com.seohamin.jastapi.web.mapping.dto;
+package com.seohamin.jastapi.web.mapping.model;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -9,13 +9,13 @@ import java.util.List;
 public class RouteInfo {
     private Object instance;
     private Method method;
-    private List<ParameterDto> parameters;
+    private List<Parameter> parameters;
     private List<String> pathVariableNames;
 
     public RouteInfo(
             final Object instance,
             final Method method,
-            final List<ParameterDto> parameters
+            final List<Parameter> parameters
     ) {
         this.instance = instance;
         this.method = method;
@@ -30,7 +30,7 @@ public class RouteInfo {
         return method;
     }
 
-    public List<ParameterDto> getParameters() {
+    public List<Parameter> getParameters() {
         return parameters;
     }
 

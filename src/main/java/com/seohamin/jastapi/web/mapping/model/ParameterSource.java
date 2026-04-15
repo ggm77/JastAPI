@@ -1,4 +1,4 @@
-package com.seohamin.jastapi.web.mapping.dto;
+package com.seohamin.jastapi.web.mapping.model;
 
 public enum ParameterSource {
     DEFAULT,

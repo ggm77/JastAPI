@@ -1,4 +1,4 @@
-package com.seohamin.jastapi.web.mapping.dto;
+package com.seohamin.jastapi.web.mapping.model;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,12 +6,12 @@ import java.util.Map;
 /**
  * 라우트를 trie의 노드로 저장하게하는 객체
  */
-public class RouteNodeDto {
+public class RouteNode {
     // 하위 노드들
-    private Map<String, RouteNodeDto> children = new HashMap<>();
+    private Map<String, RouteNode> children = new HashMap<>();
 
     // 동적 세그먼트를 위한 필드
-    private RouteNodeDto dynamicChild;
+    private RouteNode dynamicChild;
 
     // 루트 노드인지 여부
     private boolean isRoot = false;
@@ -23,8 +23,8 @@ public class RouteNodeDto {
      * 루트 노드를 생성하는 정적 메서드이다.
      * @return 루트 노드 객체
      */
-    public static RouteNodeDto createRootNode() {
-        final RouteNodeDto rootNode = new RouteNodeDto();
+    public static RouteNode createRootNode() {
+        final RouteNode rootNode = new RouteNode();
         rootNode.setIsRoot(true);
         return rootNode;
     }
@@ -34,15 +34,15 @@ public class RouteNodeDto {
      * @param key 새로운 요소의 키 (= 세그먼트)
      * @param value 새로운 요소의 값 (= 노드)
      */
-    public void putChildren(String key, RouteNodeDto value) {
+    public void putChildren(String key, RouteNode value) {
         children.put(key, value);
     }
 
-    public Map<String, RouteNodeDto> getChildren() {
+    public Map<String, RouteNode> getChildren() {
         return children;
     }
 
-    public RouteNodeDto getDynamicChild() {
+    public RouteNode getDynamicChild() {
         return dynamicChild;
     }
 
@@ -54,7 +54,7 @@ public class RouteNodeDto {
         return routeInfo;
     }
 
-    public void setDynamicChild(RouteNodeDto dynamicChild) {
+    public void setDynamicChild(RouteNode dynamicChild) {
         this.dynamicChild = dynamicChild;
     }
 

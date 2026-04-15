@@ -1,4 +1,4 @@
-package com.seohamin.jastapi.web.mapping.dto;
+package com.seohamin.jastapi.web.mapping.model;
 
 import java.util.Map;
 
