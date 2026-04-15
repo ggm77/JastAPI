@@ -1,6 +1,7 @@
 package com.seohamin.jastapi_example.post.controller;
 
 import com.seohamin.jastapi.annotation.*;
+import com.seohamin.jastapi_example.post.dto.PostListResponse;
 import com.seohamin.jastapi_example.post.dto.PostRequest;
 import com.seohamin.jastapi_example.post.dto.PostResponse;
 import com.seohamin.jastapi_example.post.service.PostService;
@@ -16,8 +17,8 @@ public class PostController {
 
     // 게시글 전체 조회
     @Get("/api/post")
-    public String hello() {
-        return "hello";
+    public PostListResponse hello() {
+        return postService.getAllPosts();
     }
 
     //게시글 등록
@@ -37,11 +38,11 @@ public class PostController {
     }
     //게시글 수정
     @Patch("/api/post/{id}")
-    public String patch(
+    public PostResponse patch(
             @PathVariable("id") String id,
             @RequestBody PostRequest postRequest
     ) {
-        return "patch: " + id;
+        return postService.updatePost(id, postRequest);
     }
 
     //게시글 삭제
@@ -51,6 +52,6 @@ public class PostController {
             @RequestBody PostRequest postRequest
     ) {
         postService.deletePost(id, postRequest);
-        return "delete: " + id;
+        return "deleted";
     }
 }

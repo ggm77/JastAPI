@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class PostRepository {
@@ -75,6 +77,35 @@ public class PostRepository {
         }
 
         return null;
+    }
+
+    // DB에 저장된 모든 게시글 조회하는 메서드
+    public List<Post> findAll() {
+        final String findAllSql = "SELECT id, title, content, author, password FROM post";
+        final List<Post> posts = new ArrayList<>();
+
+        try (
+                Connection conn = provider.getConnection();
+                PreparedStatement pst = conn.prepareStatement(findAllSql)
+        ) {
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    final Post post = new Post(
+                            rs.getLong("id"),
+                            rs.getString("title"),
+                            rs.getString("content"),
+                            rs.getString("author"),
+                            rs.getString("password")
+                    );
+
+                    posts.add(post);
+                }
+            }
+        } catch (final SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return posts;
     }
 
     // 인자로 받은 Post를 적절히 수정하는 메서드
