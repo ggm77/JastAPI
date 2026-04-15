@@ -1,6 +1,6 @@
 package com.seohamin.jastapi_example.db;
 
-import com.seohamin.jastapi.annotation.Component;
+import com.seohamin.jastapi.annotation.core.Component;
 import com.seohamin.jastapi.db.ConnectionProvider;
 
 import java.sql.Connection;

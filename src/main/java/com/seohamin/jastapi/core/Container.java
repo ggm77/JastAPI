@@ -1,6 +1,7 @@
 package com.seohamin.jastapi.core;
 
-import com.seohamin.jastapi.annotation.Component;
+import com.seohamin.jastapi.annotation.core.Component;
+import com.seohamin.jastapi.web.Dispatcher;
 import com.seohamin.jastapi.web.mapping.Router;
 
 import java.lang.reflect.Constructor;
@@ -13,29 +14,28 @@ import java.util.Set;
 /**
  * 스캔한 클래스들을 관리하는 싱글톤 컨테이너
  */
+@Component
 public class Container {
 
     // 컨테이너
-    private static final Map<Class<?>, Object> beans = new HashMap<>();
+    private final Map<Class<?>, Object> beans = new HashMap<>();
 
     // 인터페이스와 구현체 맵 (인터페이스는 빈 등록 안하기 때문)
-    private static final Map<Class<?>, Class<?>> interfaceToImplMap = new HashMap<>();
+    private final Map<Class<?>, Class<?>> interfaceToImplMap = new HashMap<>();
 
     // 순환 참조 방지용
-    private static final Set<Class<?>> isCreation = new HashSet<>();
+    private final Set<Class<?>> isCreation = new HashSet<>();
 
-    // 인스턴스화 방지
-    private Container() {}
+    public Container() {}
 
     /**
      * 싱클톤 객체를 저장할 컨테이너를 생성하는 메서드.
      * @param scannedClasses Scanner로 스캔한 클래스들
      */
-    public static void init(final Map<String, Class<?>> scannedClasses) {
+    public void init(final Map<String, Class<?>> scannedClasses) {
 
-        // 라우터 생성 및 저장
-        final Router router = new Router();
-        beans.put(Router.class, router);
+        // 자기 자신 컨테이너에 등록
+        beans.put(Container.class, this);
 
         // 인터페이스와 구현체 맵 생성
         for (final String key : scannedClasses.keySet()) {
@@ -64,8 +64,12 @@ public class Container {
             }
         }
 
-        // 빈 등록이 끝난 후 라우터 초기화
-        router.init(scannedClasses);
+
+        // 라우터 생성 및 라우터 초기화
+        getBean(Router.class).init(scannedClasses);
+
+        // 디스패쳐 생성
+        getBean(Dispatcher.class);
     }
 
     /**
@@ -75,7 +79,7 @@ public class Container {
      * @return 해당 클래스의 싱글톤 객체
      * @param <T> 해당 클래스의 타입
      */
-    public static <T> T getBean(final Class<T> clazz) {
+    public <T> T getBean(final Class<T> clazz) {
 
         if (clazz.isInterface()) {
             final Class<?> implClass = interfaceToImplMap.get(clazz);
@@ -113,7 +117,7 @@ public class Container {
      * 클래스를 빈에 등록하는 메서드
      * @param clazz 빈에 등록할 클래스
      */
-    private static void addBean(final Class<?> clazz) {
+    private void addBean(final Class<?> clazz) {
         try {
             final Constructor<?>[] constructors = clazz.getDeclaredConstructors();
             if (constructors.length > 1) {

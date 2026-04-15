@@ -1,8 +1,4 @@
-package com.seohamin.jastapi.util;
-
-import com.seohamin.jastapi.web.http.HttpHeader;
-import com.seohamin.jastapi.web.http.HttpResponse;
-import com.seohamin.jastapi.web.http.HttpStatus;
+package com.seohamin.jastapi.web.http;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -23,12 +19,7 @@ public class ErrorResponse {
     public static HttpResponse createBadRequest(
             final String version
     ) {
-        final String bodyStr =
-                "{\"status\":400,"
-                +"\"message\":\"Bad Request\","
-                +"\"timestamp\":\""+LocalDateTime.now()+"\"}";
-
-        final byte[] body = bodyStr.getBytes(StandardCharsets.UTF_8);
+        final byte[] body = getBody(HttpStatus.BAD_REQUEST);
 
         return new HttpResponse(
                 version,
@@ -47,17 +38,32 @@ public class ErrorResponse {
     public static HttpResponse createNotFound(
             final String version
     ) {
-        final String bodyStr =
-                "{\"status\":404,"
-                        +"\"message\":\"Not Found\","
-                        +"\"timestamp\":\""+LocalDateTime.now()+"\"}";
-
-        final byte[] body = bodyStr.getBytes(StandardCharsets.UTF_8);
+        final byte[] body = getBody(HttpStatus.NOT_FOUND);
 
         return new HttpResponse(
                 version,
-                HttpStatus.BAD_REQUEST.getStatusCode(),
-                HttpStatus.BAD_REQUEST.getStatusMessage(),
+                HttpStatus.NOT_FOUND.getStatusCode(),
+                HttpStatus.NOT_FOUND.getStatusMessage(),
+                getDefaultHeader(body.length),
+                body
+        );
+    }
+
+    /**
+     * InternalServerError에 대한 HttpResponse를 생성한다.
+     * @param version Http 버전
+     * @return InternalServerError에 대한 HttpResponse
+     */
+    public static HttpResponse createInternalServerError(
+            final String version
+    ) {
+
+        final byte[] body = getBody(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        return new HttpResponse(
+                version,
+                HttpStatus.INTERNAL_SERVER_ERROR.getStatusCode(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getStatusMessage(),
                 getDefaultHeader(body.length),
                 body
         );
@@ -72,5 +78,11 @@ public class ErrorResponse {
         header.add("Cache-Control", "no-cache, no-store");
 
         return header;
+    }
+
+    private static byte[] getBody(HttpStatus httpStatus) {
+        return ("{\"status\":"+httpStatus.getStatusCode()+","
+                        +"\"message\":\""+httpStatus.getStatusMessage()+"\","
+                        +"\"timestamp\":\""+LocalDateTime.now()+"\"}").getBytes(StandardCharsets.UTF_8);
     }
 }

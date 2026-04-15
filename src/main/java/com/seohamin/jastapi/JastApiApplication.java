@@ -24,7 +24,7 @@ public class JastApiApplication {
     private JastApiApplication() {}
 
     /**
-     * JastAPI 서버를 시작하는 메서드
+     * JastAPI 서버를 시작하는 외부에서 호출하는 메서드
      * @param sourceClass 이 메서드를 호출하는 클래스
      * @param isLocalhost localhost로 열지 여부
      * @param port 서버 열 포트 번호
@@ -34,14 +34,31 @@ public class JastApiApplication {
             final boolean isLocalhost,
             final int port
     ) {
+        new JastApiApplication().server(sourceClass, isLocalhost, port);
+    }
 
+    /**
+     * 실제 서버를 시작 시키는 메서드
+     * @param sourceClass 이 메서드를 호출하는 클래스
+     * @param isLocalhost localhost로 열지 여부
+     * @param port 서버 열 포트 번호
+     */
+    private void server(
+            final Class<?> sourceClass,
+            final boolean isLocalhost,
+            final int port
+    ) {
         // check if port is valid | 포트번호 올바른지 검사
         if (port < 0 || port > 65535) {
             throw new IllegalArgumentException("Port must be between 0 and 65535");
         }
 
         // 컨테이너 초기화로 라우터까지 자동 생성
-        Container.init(Scanner.scan(sourceClass));
+        final Container container = new Container();
+        container.init(Scanner.scan(sourceClass));
+
+        // 디스패쳐 빈 가져오기
+        final Dispatcher dispatcher = container.getBean(Dispatcher.class);
 
         ExecutorService executor = Executors.newFixedThreadPool(20);
 
@@ -80,7 +97,7 @@ public class JastApiApplication {
                         while (!socket.isClosed()) {
                             final HttpRequest httpRequest = HttpRequestParser.parse(in);
 
-                            final HttpResponse httpResponse = Dispatcher.dispatch(httpRequest);
+                            final HttpResponse httpResponse = dispatcher.dispatch(httpRequest);
 
                             if (httpResponse != null) {
                                 out.write(httpResponse.toBytes());

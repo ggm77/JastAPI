@@ -1,6 +1,7 @@
 package com.seohamin.jastapi_example.post.controller;
 
-import com.seohamin.jastapi.annotation.*;
+import com.seohamin.jastapi.annotation.core.Component;
+import com.seohamin.jastapi.annotation.web.*;
 import com.seohamin.jastapi_example.post.dto.PostListResponse;
 import com.seohamin.jastapi_example.post.dto.PostRequest;
 import com.seohamin.jastapi_example.post.dto.PostResponse;

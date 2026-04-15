@@ -1,9 +1,9 @@
 package com.seohamin.jastapi_example.home;
 
-import com.seohamin.jastapi.annotation.Component;
-import com.seohamin.jastapi.annotation.Get;
-import com.seohamin.jastapi.util.ErrorResponse;
-import com.seohamin.jastapi.util.HttpTime;
+import com.seohamin.jastapi.annotation.core.Component;
+import com.seohamin.jastapi.annotation.web.Get;
+import com.seohamin.jastapi.web.http.ErrorResponse;
+import com.seohamin.jastapi.web.http.HttpTime;
 import com.seohamin.jastapi.web.http.HttpHeader;
 import com.seohamin.jastapi.web.http.HttpResponse;
 import com.seohamin.jastapi.web.http.HttpStatus;

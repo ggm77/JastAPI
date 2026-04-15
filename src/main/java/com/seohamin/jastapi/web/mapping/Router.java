@@ -1,13 +1,13 @@
 package com.seohamin.jastapi.web.mapping;
 
-import com.seohamin.jastapi.annotation.*;
+import com.seohamin.jastapi.annotation.core.Component;
+import com.seohamin.jastapi.annotation.web.*;
 import com.seohamin.jastapi.core.Container;
 import com.seohamin.jastapi.web.http.HttpMethod;
-import com.seohamin.jastapi.web.mapping.dto.*;
+import com.seohamin.jastapi.web.mapping.model.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.*;
 
 /**
@@ -17,8 +17,14 @@ import java.util.*;
 @Component
 public class Router {
 
+    private final Container container;
+
+    public Router(Container container) {
+        this.container = container;
+    }
+
     // Http method 별 라우팅 trie의 루트 노드를 저장할 맵
-    private final Map<HttpMethod, RouteNodeDto> routerTrieMap = new HashMap<>();
+    private final Map<HttpMethod, RouteNode> routerTrieMap = new HashMap<>();
 
     /**
      * 라우터를 초기화 시키는 메서드.
@@ -33,7 +39,7 @@ public class Router {
 
         // 각 Http method에 맞는 루트 생성
         for (HttpMethod httpMethod : HttpMethod.values()) {
-            routerTrieMap.put(httpMethod, RouteNodeDto.createRootNode());
+            routerTrieMap.put(httpMethod, RouteNode.createRootNode());
         }
 
         // 스캔 된 모든 클래스에 대해서 반복
@@ -41,7 +47,7 @@ public class Router {
             final Class<?> clazz = scannedClasses.get(key);
 
             // 컨테이너에서 해당 클래스의 빈(인스턴스) 가져오기
-            final Object instance = Container.getBean(clazz);
+            final Object instance = container.getBean(clazz);
 
             // 해당 클래스에 존재하는 모든 메서드에 대해서 반복
             for (final Method method : clazz.getDeclaredMethods()) {
@@ -49,25 +55,25 @@ public class Router {
                 for (final Annotation annotation : method.getAnnotations()) {
 
                     // 메서드가 필요로 하는 모든 파라미터 가져오기
-                    final Parameter[] parameters = method.getParameters();
+                    final java.lang.reflect.Parameter[] parameters = method.getParameters();
 
                     // 파라미터 정보 저장할 객체의 리스트 생성
-                    final List<ParameterDto> parameterDtos = new ArrayList<>();
+                    final List<Parameter> parameterDtos = new ArrayList<>();
 
 
                     // 메서드 파라미터에 붙은 어노테이션을 분석하여 매핑 정보 생성
-                    for (final Parameter param : parameters) {
+                    for (final java.lang.reflect.Parameter param : parameters) {
                         // 어노테이션에 따라 적절한 정보 담아서 저장
                         if (param.isAnnotationPresent(RequestBody.class)) {
-                            parameterDtos.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.BODY, null));
+                            parameterDtos.add(new Parameter(param.getName(), param.getType(), ParameterSource.BODY, null));
                         } else if (param.isAnnotationPresent(PathVariable.class)) {
                             final String annotationValue = param.getAnnotation(PathVariable.class).value();
-                            parameterDtos.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.PATH, annotationValue));
+                            parameterDtos.add(new Parameter(param.getName(), param.getType(), ParameterSource.PATH, annotationValue));
                         } else if (param.isAnnotationPresent(RequestParam.class)) {
                             final String annotationValue = param.getAnnotation(RequestParam.class).value();
-                            parameterDtos.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.PARAM, annotationValue));
+                            parameterDtos.add(new Parameter(param.getName(), param.getType(), ParameterSource.PARAM, annotationValue));
                         } else {
-                            parameterDtos.add(new ParameterDto(param.getName(), param.getType(), ParameterSource.DEFAULT, null));
+                            parameterDtos.add(new Parameter(param.getName(), param.getType(), ParameterSource.DEFAULT, null));
                         }
                     }
 
@@ -117,7 +123,7 @@ public class Router {
         }
 
         // 루트 노드부터 trie 순회
-        RouteNodeDto currentNode = routerTrieMap.get(httpMethod);
+        RouteNode currentNode = routerTrieMap.get(httpMethod);
 
         // path variable의 이름을 저장하는 리스트 (예: {id}에서 "id")
         // 나중에 라우터에서 조회 할 때 사용하므로 요소의 순서가 매우 중요
@@ -138,7 +144,7 @@ public class Router {
                     currentNode = currentNode.getDynamicChild();
                 } else {
                     // 새로운 노드를 만들고 그걸 현재 노드의 동적 세그먼트 자리에 넣기
-                    final RouteNodeDto dynamicChild = new RouteNodeDto();
+                    final RouteNode dynamicChild = new RouteNode();
                     currentNode.setDynamicChild(dynamicChild);
 
                     // 생성한 노드를 다음 노드로 선택
@@ -149,7 +155,7 @@ public class Router {
             else {
 
                 // 현재 노드에 다음 노드가 이미 저장되어 있는지 확인
-                final RouteNodeDto next = currentNode.getChildren().get(segment);
+                final RouteNode next = currentNode.getChildren().get(segment);
 
                 // 저장 되어있다면
                 if (next != null) {
@@ -159,7 +165,7 @@ public class Router {
                 // 저장 되어있지 않다면
                 else {
                     // 새로운 노드 생성하고 그 노드를 children에 추가
-                    final RouteNodeDto child = new RouteNodeDto();
+                    final RouteNode child = new RouteNode();
                     currentNode.putChildren(segment, child);
 
                     // 추가한 노드를 다음 노드로 선택
@@ -191,7 +197,7 @@ public class Router {
         }
 
         // 루트 노드부터 trie 순회
-        RouteNodeDto currentNode = routerTrieMap.get(httpMethod);
+        RouteNode currentNode = routerTrieMap.get(httpMethod);
 
         // path variable 자리에 적힌 실제 값을 저장할 리스트
         final List<String> pathVariableValues = new ArrayList<>();
@@ -200,7 +206,7 @@ public class Router {
         for (String segment : splitToSegments(path)) {
 
             // 세그먼트로 다음 노드가 정적 세그먼트 중에 존재하는지 조회
-            final RouteNodeDto next = currentNode.getChildren().get(segment);
+            final RouteNode next = currentNode.getChildren().get(segment);
 
             // 존재한다면
             if (next != null) {
