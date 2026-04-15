@@ -11,6 +11,12 @@ jar {
                 'Main-Class': 'com.seohamin.jastapi_example.Main'
         )
     }
+
+    // for test
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 repositories {
