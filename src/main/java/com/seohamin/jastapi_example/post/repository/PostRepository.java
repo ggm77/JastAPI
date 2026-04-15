@@ -11,22 +11,33 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class interact with DB and gets some results.
+ */
 @Component
 public class PostRepository {
 
-    private final ConnectionProvider provider;
+    // instance variable for DI
+    private final ConnectionProvider provider; // it provides the connection with DB.
 
+    // constructor for DI
     public PostRepository(ConnectionProvider connectionProvider) {
         this.provider = connectionProvider;
     }
 
-    // Post 객체를 그대로 DB에 저장하는 메서드
+    /**
+     * Saves the post on DB.
+     * @param post post to save.
+     * @return saved post's id (PK).
+     */
     public Long save(final Post post) {
         final String insertSql = "INSERT INTO post (title, content, author, password) VALUES (?,?,?,?)";
         final String findSql = "SELECT LAST_INSERT_ID()";
 
+        // get connection
         try (final Connection conn = provider.getConnection()) {
 
+            // save post's information
             try (PreparedStatement pst = conn.prepareStatement(insertSql)) {
                 pst.setString(1, post.getTitle());
                 pst.setString(2, post.getContent());
@@ -35,6 +46,7 @@ public class PostRepository {
                 pst.executeUpdate();
             }
 
+            // get post's id
             try (PreparedStatement pst = conn.prepareStatement(findSql)) {
                 final ResultSet rs = pst.executeQuery();
 
@@ -46,19 +58,27 @@ public class PostRepository {
             ex.printStackTrace();
         }
 
+        // default value
         return null;
     }
 
-    // id로 DB에서 게시글 조회하는 메서드
+    /**
+     * Gets a single post from DB.
+     * @param id post's id
+     * @return the post found with the given ID.
+     */
     public Post findById(final Long id) {
         final String findByIdSql = "SELECT id, title, content, author, password FROM post WHERE id = ?";
 
+        // get connection
         try (
                 Connection conn = provider.getConnection();
                 PreparedStatement pst = conn.prepareStatement(findByIdSql)
         ) {
+            // set query
             pst.setLong(1, id);
 
+            // execute the query and get result
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {
                     final Post post = new Post(
@@ -79,17 +99,23 @@ public class PostRepository {
         return null;
     }
 
-    // DB에 저장된 모든 게시글 조회하는 메서드
+    /**
+     * Gets all posts from DB.
+     * @return the posts found at DB.
+     */
     public List<Post> findAll() {
         final String findAllSql = "SELECT id, title, content, author, password FROM post";
         final List<Post> posts = new ArrayList<>();
 
+        // get connection
         try (
                 Connection conn = provider.getConnection();
                 PreparedStatement pst = conn.prepareStatement(findAllSql)
         ) {
+            // execute the query and get result.
             try (ResultSet rs = pst.executeQuery()) {
                 while (rs.next()) {
+                    // pare the result and add to array list
                     final Post post = new Post(
                             rs.getLong("id"),
                             rs.getString("title"),
@@ -108,11 +134,18 @@ public class PostRepository {
         return posts;
     }
 
-    // 인자로 받은 Post를 적절히 수정하는 메서드
+    /**
+     * Updates a specific post's information.
+     * @param post post's new information.
+     * @return updated post.
+     */
     public Post update(final Post post) {
         final String updateSql = "UPDATE post SET title=?, content=?, author=?, password=? WHERE id=?";
 
+        // get connection with DB
         try (final Connection conn = provider.getConnection()) {
+
+            // set query and execute the query
             try (final PreparedStatement pst = conn.prepareStatement(updateSql)) {
                 pst.setString(1, post.getTitle());
                 pst.setString(2, post.getContent());
@@ -135,7 +168,11 @@ public class PostRepository {
         return null;
     }
 
-    // 특정 id의 게시글을 삭제하는 메서드
+    /**
+     * Deletes a specific post.
+     * @param id post's id that wants to delete.
+     * @return success or failure
+     */
     public boolean delete(final Long id) {
         final String deleteSql = "DELETE FROM post WHERE id=?";
 

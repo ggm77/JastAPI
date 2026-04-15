@@ -11,12 +11,20 @@ import com.seohamin.jastapi.web.http.HttpStatus;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Controller that serves index.html.
+ */
 @Component
 public class HomeController {
 
+    /**
+     * Serves the main page with index.html file.
+     * @return HttpResponse what the body is index.html file.
+     */
     @Get("/")
     public HttpResponse getHomePage() {
 
+        // get index.html file by class loader
         byte[] body;
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("index.html")) {
             if (is != null) {
@@ -24,11 +32,14 @@ public class HomeController {
             } else {
                 body = new byte[0];
             }
-        } catch (IOException ex) {
+        }
+        // if there is some IO problems, it will return 400.
+        catch (IOException ex) {
             ex.printStackTrace();
             return ErrorResponse.createNotFound("HTTP/1.1");
         }
 
+        // Build HttpResponse's http header.
         final HttpHeader responseHeader = new HttpHeader();
         responseHeader.add("Content-Type", "text/html; charset=utf-8");
         responseHeader.add("Content-Length", String.valueOf(body.length));
@@ -36,8 +47,7 @@ public class HomeController {
         responseHeader.add("Cache-Control", "no-cache, no-store, must-revalidate");
         responseHeader.add("Date", HttpTime.getCurrentTime());
 
-
-        // http response 객체 필드 채우기
+        // Build HttpResponse with body and http header.
         final HttpResponse httpResponse = new HttpResponse();
         httpResponse.setStatusCode(HttpStatus.OK.getStatusCode());
         httpResponse.setStatusMessage(HttpStatus.OK.getStatusMessage());
@@ -45,6 +55,7 @@ public class HomeController {
         httpResponse.setBody(body);
         httpResponse.setHeader(responseHeader);
 
+        // return HttpResponse directly.
         return httpResponse;
     }
 }

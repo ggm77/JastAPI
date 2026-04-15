@@ -2,13 +2,20 @@ package com.seohamin.jastapi_example.post.dto;
 
 import com.seohamin.jastapi_example.post.entity.Post;
 
-// 게시글 조회 응답용
+/**
+ * This class is the form of http response body that using for post CRUD APIs.
+ */
 public class PostResponse {
+    // the information that client may receive.
     private Long id;
     private String title;
     private String content;
     private String author;
 
+    /**
+     * Constructor with Post
+     * @param post the class that includes post's information
+     */
     public PostResponse(Post post) {
         this.id = post.getId();
         this.title = post.getTitle();
