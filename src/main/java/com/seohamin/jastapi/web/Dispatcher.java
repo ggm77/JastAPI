@@ -5,12 +5,14 @@ import com.seohamin.jastapi.util.Converter;
 import com.seohamin.jastapi.web.http.ErrorResponse;
 import com.seohamin.jastapi.web.http.HttpTime;
 import com.seohamin.jastapi.web.http.*;
+import com.seohamin.jastapi.web.http.exception.HttpResponseException;
 import com.seohamin.jastapi.web.mapping.Router;
 import com.seohamin.jastapi.web.mapping.model.Parameter;
 import com.seohamin.jastapi.web.mapping.model.ParameterSource;
 import com.seohamin.jastapi.web.mapping.model.RouteDto;
 import com.seohamin.jastapi.web.mapping.model.RouteInfo;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -123,7 +125,20 @@ public class Dispatcher {
             } else {
                 body = new byte[0];
             }
-        } catch (Exception ex) {
+        }
+        // invoke한 메서드 내부에서 일어난 예외
+        catch (InvocationTargetException ex) {
+            final Throwable cause = ex.getCause();
+
+            if (cause instanceof HttpResponseException) {
+                return ((HttpResponseException) cause).getHttpResponse();
+            } else {
+                ex.printStackTrace();
+                return ErrorResponse.createInternalServerError(version);
+            }
+        }
+        // 기타 모든 예외
+        catch (Exception ex) {
             ex.printStackTrace();
             return ErrorResponse.createInternalServerError(version);
         }
