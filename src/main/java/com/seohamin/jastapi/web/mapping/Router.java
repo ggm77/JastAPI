@@ -17,6 +17,12 @@ import java.util.*;
 @Component
 public class Router {
 
+    private final Container container;
+
+    public Router(Container container) {
+        this.container = container;
+    }
+
     // Http method 별 라우팅 trie의 루트 노드를 저장할 맵
     private final Map<HttpMethod, RouteNode> routerTrieMap = new HashMap<>();
 
@@ -41,7 +47,7 @@ public class Router {
             final Class<?> clazz = scannedClasses.get(key);
 
             // 컨테이너에서 해당 클래스의 빈(인스턴스) 가져오기
-            final Object instance = Container.getBean(clazz);
+            final Object instance = container.getBean(clazz);
 
             // 해당 클래스에 존재하는 모든 메서드에 대해서 반복
             for (final Method method : clazz.getDeclaredMethods()) {

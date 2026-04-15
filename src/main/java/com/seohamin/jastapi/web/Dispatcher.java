@@ -1,5 +1,6 @@
 package com.seohamin.jastapi.web;
 
+import com.seohamin.jastapi.annotation.core.Component;
 import com.seohamin.jastapi.core.Container;
 import com.seohamin.jastapi.util.Converter;
 import com.seohamin.jastapi.web.http.ErrorResponse;
@@ -18,17 +19,21 @@ import java.util.Map;
 /**
  * 외부에서 들어오는 요청을 적절히 처리하는 클래스
  */
+@Component
 public class Dispatcher {
 
-    // 인스턴스화 방지
-    private Dispatcher() {}
+    private final Container container;
+
+    public Dispatcher(Container container) {
+        this.container = container;
+    }
 
     /**
      * 클라이언트로 요청받은 Http 요청에 따라 알맞은 처리를하고 응답을 주는 메서드.
      * @param httpRequest Http 요청 정보가 담긴 객체
      * @return Http 응답 값
      */
-    public static HttpResponse dispatch(final HttpRequest httpRequest) {
+    public HttpResponse dispatch(final HttpRequest httpRequest) {
 
         if (httpRequest == null) {
             return ErrorResponse.createBadRequest("HTTP/1.1");
@@ -58,7 +63,7 @@ public class Dispatcher {
         }
 
         // 컨테이너에서 라우터 빈에 접근해서 http method와 request path에 맞는 라우트 찾기
-        final RouteDto routeDto = Container.getBean(Router.class).getRoute(httpMethod, path);
+        final RouteDto routeDto = container.getBean(Router.class).getRoute(httpMethod, path);
 
         // 못 찾으면 404 던짐
         if (routeDto == null) {
