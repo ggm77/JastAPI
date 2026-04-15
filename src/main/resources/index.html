@@ -27,7 +27,7 @@
                 <th>ID</th>
                 <th>Title</th>
                 <th>Author</th>
-                <th>edit</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody id="postTableBody"></tbody>
@@ -73,7 +73,7 @@
             };
 
             const url = id ? `${API_BASE}/${id}` : API_BASE;
-            const method = id ? 'PUT' : 'POST';
+            const method = id ? 'PATCH' : 'POST';
 
             try {
                 const res = await fetch(url, {
@@ -85,6 +85,8 @@
                     alert('success');
                     resetForm();
                     loadPosts();
+                } else {
+                    alert(`ERROR: ${res.status}`)
                 }
             } catch (e) { console.error(e); }
         }
@@ -102,6 +104,8 @@
                 if (res.ok) {
                     alert('Deleted');
                     loadPosts();
+                } else {
+                    alert(`ERROR: ${res.status}`)
                 }
             } catch (e) { console.error(e); }
         }
