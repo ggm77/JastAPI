@@ -18,20 +18,27 @@
 
     <hr>
 
-    <div>
-        <h2>Post List</h2>
-        <button type="button" onclick="loadPosts()">Refresh</button>
-        <table border="1">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody id="postTableBody"></tbody>
-        </table>
+    <div style="display: flex; gap: 20px;">
+        <div style="flex: 1;">
+            <h2>Post List</h2>
+            <button type="button" onclick="loadPosts()">Refresh</button>
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody id="postTableBody"></tbody>
+            </table>
+        </div>
+        <div style="flex: 1; border: 1px solid #ccc; padding: 10px;">
+            <h2>Post Content</h2>
+            <p>Selected Post's id: <span id="selectedId"></span></p>
+            <textarea id="post_content" placeholder="content" style="width: 100%; height: 200px;" readonly></textarea>
+        </div>
     </div>
 
     <script>
@@ -49,7 +56,7 @@
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${post.id}</td>
-                        <td>${post.title}</td>
+                        <td onclick='viewPost(${JSON.stringify(post).replace(/"/g, '&quot;')})' style="cursor:pointer; color:blue;">${post.title}</td>
                         <td>${post.author}</td>
                         <td>
                             <button onclick="fillForm(${JSON.stringify(post).replace(/"/g, '&quot;')})">수정</button>
@@ -61,6 +68,11 @@
             } catch (e) {
                 console.error(e);
             }
+        }
+
+        function viewPost(post) {
+            document.getElementById('selectedId').innerText = post.id;
+            document.getElementById('post_content').value = post.content;
         }
 
         async function handleSave() {
