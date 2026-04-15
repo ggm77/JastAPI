@@ -1,6 +1,8 @@
 package com.seohamin.jastapi_example.post.service;
 
 import com.seohamin.jastapi.annotation.core.Component;
+import com.seohamin.jastapi.web.http.ErrorResponse;
+import com.seohamin.jastapi.web.http.exception.HttpResponseException;
 import com.seohamin.jastapi_example.post.dto.PostListResponse;
 import com.seohamin.jastapi_example.post.dto.PostRequest;
 import com.seohamin.jastapi_example.post.dto.PostResponse;
@@ -63,7 +65,7 @@ public class PostService {
 
         // checks the password
         if (!post.getPassword().equals(postRequest.getPassword())) {
-            throw new RuntimeException("wrong password."); // it will return 400
+            throw new HttpResponseException(ErrorResponse.createBadRequest("HTTP/1.1"));
         }
 
         post.setTitle(postRequest.getTitle());
@@ -90,7 +92,7 @@ public class PostService {
             postRepository.delete(id);
         } else {
             // 비번이 틀리면 에러 발생
-            throw new RuntimeException("wrong password."); // it will return 400
+            throw new HttpResponseException(ErrorResponse.createBadRequest("HTTP/1.1"));
         }
     }
 }
