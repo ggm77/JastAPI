@@ -19,12 +19,7 @@ public class ErrorResponse {
     public static HttpResponse createBadRequest(
             final String version
     ) {
-        final String bodyStr =
-                "{\"status\":400,"
-                +"\"message\":\"Bad Request\","
-                +"\"timestamp\":\""+LocalDateTime.now()+"\"}";
-
-        final byte[] body = bodyStr.getBytes(StandardCharsets.UTF_8);
+        final byte[] body = getBody(HttpStatus.BAD_REQUEST);
 
         return new HttpResponse(
                 version,
@@ -43,12 +38,7 @@ public class ErrorResponse {
     public static HttpResponse createNotFound(
             final String version
     ) {
-        final String bodyStr =
-                "{\"status\":404,"
-                        +"\"message\":\"Not Found\","
-                        +"\"timestamp\":\""+LocalDateTime.now()+"\"}";
-
-        final byte[] body = bodyStr.getBytes(StandardCharsets.UTF_8);
+        final byte[] body = getBody(HttpStatus.NOT_FOUND);
 
         return new HttpResponse(
                 version,
@@ -67,12 +57,8 @@ public class ErrorResponse {
     public static HttpResponse createInternalServerError(
             final String version
     ) {
-        final String bodyStr =
-                "{\"status\":500,"
-                        +"\"message\":\"InternalServerError\","
-                        +"\"timestamp\":\""+LocalDateTime.now()+"\"}";
 
-        final byte[] body = bodyStr.getBytes(StandardCharsets.UTF_8);
+        final byte[] body = getBody(HttpStatus.INTERNAL_SERVER_ERROR);
 
         return new HttpResponse(
                 version,
@@ -92,5 +78,11 @@ public class ErrorResponse {
         header.add("Cache-Control", "no-cache, no-store");
 
         return header;
+    }
+
+    private static byte[] getBody(HttpStatus httpStatus) {
+        return ("{\"status\":"+httpStatus.getStatusCode()+","
+                        +"\"message\":\""+httpStatus.getStatusMessage()+"\","
+                        +"\"timestamp\":\""+LocalDateTime.now()+"\"}").getBytes(StandardCharsets.UTF_8);
     }
 }
