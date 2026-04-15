@@ -52,8 +52,8 @@ public class ErrorResponse {
 
         return new HttpResponse(
                 version,
-                HttpStatus.BAD_REQUEST.getStatusCode(),
-                HttpStatus.BAD_REQUEST.getStatusMessage(),
+                HttpStatus.NOT_FOUND.getStatusCode(),
+                HttpStatus.NOT_FOUND.getStatusMessage(),
                 getDefaultHeader(body.length),
                 body
         );
