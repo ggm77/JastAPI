@@ -59,6 +59,30 @@ public class ErrorResponse {
         );
     }
 
+    /**
+     * InternalServerError에 대한 HttpResponse를 생성한다.
+     * @param version Http 버전
+     * @return InternalServerError에 대한 HttpResponse
+     */
+    public static HttpResponse createInternalServerError(
+            final String version
+    ) {
+        final String bodyStr =
+                "{\"status\":500,"
+                        +"\"message\":\"InternalServerError\","
+                        +"\"timestamp\":\""+LocalDateTime.now()+"\"}";
+
+        final byte[] body = bodyStr.getBytes(StandardCharsets.UTF_8);
+
+        return new HttpResponse(
+                version,
+                HttpStatus.INTERNAL_SERVER_ERROR.getStatusCode(),
+                HttpStatus.INTERNAL_SERVER_ERROR.getStatusMessage(),
+                getDefaultHeader(body.length),
+                body
+        );
+    }
+
     private static HttpHeader getDefaultHeader(int contentLength) {
         final HttpHeader header = new HttpHeader();
         header.add("Content-Type", "application/json");

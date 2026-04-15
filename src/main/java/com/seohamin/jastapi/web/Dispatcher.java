@@ -125,7 +125,7 @@ public class Dispatcher {
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-            return ErrorResponse.createBadRequest(version);
+            return ErrorResponse.createInternalServerError(version);
         }
 
         // 메서드 호출 결과가 HttpResponse인 경우 캐스팅해서 바로 전송
