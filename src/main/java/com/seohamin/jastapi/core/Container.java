@@ -115,7 +115,12 @@ public class Container {
      */
     private static void addBean(final Class<?> clazz) {
         try {
-            final Constructor<?> constructor = clazz.getDeclaredConstructors()[0];
+            final Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+            if (constructors.length > 1) {
+                throw new IllegalArgumentException("[ERROR] 컨테이너에 등록할 클래스에 생성자가 2개 이상 존재합니다. 클래스: "+clazz.getName());
+            }
+
+            final Constructor<?> constructor = constructors[0];
 
             final Class<?>[] parameterTypes = constructor.getParameterTypes();
             final Object[] parameters = new Object[parameterTypes.length];
