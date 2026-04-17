@@ -75,16 +75,16 @@ public class JastApiApplication {
             serverSocket.bind(inetSocketAddress);
 
             // start log | 시작 로그 찍기
-            System.out.println("Server started on port " + port + "...");
+            System.out.println("[INFO] Server started on port " + port + "...");
 
             // server working | 서버 작동
             while (true) {
-                System.out.println("연결 대기중...");
+                System.out.println("[INFO] Waiting for connection...");
 
                 final Socket socket = serverSocket.accept();
 
                 executor.submit(() -> {
-                    System.out.println("클라이언트 연결 됨");
+                    System.out.println("[INFO] Client connected.");
 
                     try {
 
@@ -110,14 +110,16 @@ public class JastApiApplication {
                             }
                         }
                     } catch (SocketTimeoutException ex) {
-                        System.out.println("Keep-alive 타임아웃 발생.");
+                        System.out.println("[WARN] Keep-alive timeout occurred.");
                     } catch (IOException ex) {
+                        System.err.println("[ERROR] IOException occurred during client communication.");
                         ex.printStackTrace();
                     }
                     finally {
                         try {
                             socket.close();
                         } catch (IOException ex) {
+                            System.err.println("[ERROR] Failed to close socket.");
                             ex.printStackTrace();
                         }
                     }

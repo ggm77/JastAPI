@@ -43,8 +43,8 @@ public class Container {
 
             for (Class<?> interfaceClass : clazz.getInterfaces()) {
                 if (interfaceToImplMap.containsKey(interfaceClass)) {
-                    throw new RuntimeException("[ERROR] " + interfaceClass.getName() +
-                            "의 구현체가 중복됩니다: " + interfaceToImplMap.get(interfaceClass).getName() +
+                    throw new RuntimeException("[ERROR] Duplicate implementation for " + interfaceClass.getName() +
+                            ": " + interfaceToImplMap.get(interfaceClass).getName() +
                             ", " + clazz.getName());
                 }
 
@@ -99,7 +99,7 @@ public class Container {
         }
 
         if (isCreation.contains(clazz)) {
-            throw new RuntimeException("[ERROR] 순환 참조 발생: " + clazz.getName());
+            throw new RuntimeException("[ERROR] Circular reference detected: " + clazz.getName());
         }
 
         isCreation.add(clazz);
@@ -121,7 +121,7 @@ public class Container {
         try {
             final Constructor<?>[] constructors = clazz.getDeclaredConstructors();
             if (constructors.length > 1) {
-                throw new IllegalArgumentException("[ERROR] 컨테이너에 등록할 클래스에 생성자가 2개 이상 존재합니다. 클래스: "+clazz.getName());
+                throw new IllegalArgumentException("[ERROR] More than one constructor found for bean registration: "+clazz.getName());
             }
 
             final Constructor<?> constructor = constructors[0];
@@ -136,7 +136,7 @@ public class Container {
             final Object instance = constructor.newInstance(parameters);
             beans.put(clazz, instance);
         } catch (InvocationTargetException | IllegalAccessException | InstantiationException ex) {
-            System.err.println("[WARN] 기본 생성자가 없어 인스턴스 생성 불가: " + clazz.getName());
+            System.err.println("[ERROR] Cannot instantiate due to missing default constructor: " + clazz.getName());
             ex.printStackTrace();
         }
     }
