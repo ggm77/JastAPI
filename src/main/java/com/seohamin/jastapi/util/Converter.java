@@ -32,7 +32,7 @@ public class Converter {
             try {
                 return objectMapper.writeValueAsBytes(object);
             } catch (JsonProcessingException ex) {
-                System.err.println("[ERROR] JSON Processing Exception occur");
+                System.err.println("[ERROR] JSON processing exception occurred.");
                 return new byte[0];
             }
         }
