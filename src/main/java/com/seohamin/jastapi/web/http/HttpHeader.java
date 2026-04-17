@@ -14,6 +14,22 @@ public class HttpHeader {
     private final Map<String, List<String>> headers = new HashMap<>();
 
     /**
+     * 기본 응답 헤더를 만들어주는 메서드.
+     * @param contentLength body의 길이.
+     * @return 특정 길이의 content-length를 가지고, content-type이 application/json인 HTTP 헤더.
+     */
+    public static HttpHeader getDefaultResponseHeader(int contentLength) {
+        final HttpHeader responseHeader = new HttpHeader();
+        responseHeader.add("Content-Type", "application/json; charset=utf-8");
+        responseHeader.add("Content-Length", String.valueOf(contentLength));
+        responseHeader.add("Connection", "keep-alive");
+        responseHeader.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        responseHeader.add("Date", HttpTime.getCurrentTime());
+
+        return responseHeader;
+    }
+
+    /**
      * 헤더 맵에 해더 정보를 추가하는 메서드.
      * 헤더 key는 강제로 소문자로 변환한다.
      * @param name 헤더 key

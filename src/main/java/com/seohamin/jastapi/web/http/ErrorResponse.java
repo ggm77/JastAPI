@@ -69,6 +69,26 @@ public class ErrorResponse {
         );
     }
 
+    /**
+     * BadGateway에 대한 HttpResponse를 생성한다.
+     * @param version Http 버전
+     * @return BadGateway에 대한 HttpResponse
+     */
+    public static HttpResponse createBadGateway(
+            final String version
+    ) {
+
+        final byte[] body = getBody(HttpStatus.BAD_GATEWAY);
+
+        return new HttpResponse(
+                version,
+                HttpStatus.BAD_GATEWAY.getStatusCode(),
+                HttpStatus.BAD_GATEWAY.getStatusMessage(),
+                getDefaultHeader(body.length),
+                body
+        );
+    }
+
     private static HttpHeader getDefaultHeader(int contentLength) {
         final HttpHeader header = new HttpHeader();
         header.add("Content-Type", "application/json");
