@@ -5,16 +5,19 @@ import java.time.LocalDateTime;
 
 /**
  * 에러 발생 했을 때 사용할 HttpResponse를 생성하는 클래스.
+ * A factory class for creating standard HttpResponse objects
+ * to be sent when an error occurs.
  */
 public class ErrorResponse {
 
-    // 인스턴스화 방지
+    // 인스턴스화 방지 | Prevents instantiation
     private ErrorResponse() {}
 
     /**
      * BadRequest에 대한 HttpResponse를 생성한다.
-     * @param version Http 버전
-     * @return BadRequest에 대한 HttpResponse
+     * Creates an HTTP response for a 400 Bad Request error.
+     * @param version Http 버전 (The HTTP version.)
+     * @return BadRequest에 대한 HttpResponse (An HttpResponse representing a Bad Request.)
      */
     public static HttpResponse createBadRequest(
             final String version
@@ -32,8 +35,9 @@ public class ErrorResponse {
 
     /**
      * NotFound에 대한 HttpResponse를 생성한다.
-     * @param version Http 버전
-     * @return NotFound에 대한 HttpResponse
+     * Creates an HTTP response for a 404 Not Found error.
+     * @param version Http 버전 (The HTTP version.)
+     * @return NotFound에 대한 HttpResponse (An HttpResponse representing a Not Found.)
      */
     public static HttpResponse createNotFound(
             final String version
@@ -51,8 +55,9 @@ public class ErrorResponse {
 
     /**
      * InternalServerError에 대한 HttpResponse를 생성한다.
-     * @param version Http 버전
-     * @return InternalServerError에 대한 HttpResponse
+     * Creates an HTTP response for a 500 Internal Server Error.
+     * @param version Http 버전 (The HTTP version.)
+     * @return InternalServerError에 대한 HttpResponse (An HttpResponse representing a Internal Server Error.)
      */
     public static HttpResponse createInternalServerError(
             final String version
@@ -71,8 +76,9 @@ public class ErrorResponse {
 
     /**
      * BadGateway에 대한 HttpResponse를 생성한다.
-     * @param version Http 버전
-     * @return BadGateway에 대한 HttpResponse
+     * Creates an HTTP response for a 502 Bad Gateway error.
+     * @param version Http 버전 (The HTTP version.)
+     * @return BadGateway에 대한 HttpResponse  (An HttpResponse representing a Bad Gateway.)
      */
     public static HttpResponse createBadGateway(
             final String version

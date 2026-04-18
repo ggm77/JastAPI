@@ -5,6 +5,7 @@ import java.util.List;
 
 /**
  * 라우터에 저장될 정보의 클래스
+ * Class of information to be stored in the router
  */
 public class RouteInfo {
     private Object instance;

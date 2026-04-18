@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * Http 요청에 대한 정보를 저장할 클래스
+ * A class that encapsulates information about an incoming HTTP request.
  */
 public class HttpRequest {
     private String method;

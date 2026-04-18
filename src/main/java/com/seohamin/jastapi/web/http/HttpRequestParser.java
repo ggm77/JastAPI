@@ -9,6 +9,7 @@ import java.util.*;
 
 /**
  * 입력 받는 값들을 HttpRequest 객체로 파싱하는 클래스
+ * A utility class for parsing raw input data into HttpRequest objects.
  */
 public class HttpRequestParser {
 
@@ -17,9 +18,10 @@ public class HttpRequestParser {
 
     /**
      * Http를 통해 들어오는 입력들을 받아서 적절하게 HttpRequest 객체에 넣는 메서드.
-     * @param in Http로 들어오는 입력 스트림
-     * @return HttpRequest 객체
-     * @throws IOException 입력 값 받는 도중 에러 발생시 IOException 발생
+     * Parses the incoming input stream and populates a HttpRequest object.
+     * @param in Http로 들어오는 입력 스트림 (The input stream containing raw HTTP request data.)
+     * @return HttpRequest 객체 (A fully populated HttpRequest object, or null if the input is invalid.)
+     * @throws IOException 입력 값 받는 도중 에러 발생시 IOException 발생 (If an error occurs while reading the input stream.)
      */
     public static HttpRequest parse(final InputStream in) throws IOException {
         final HttpRequest httpRequest = new HttpRequest();
@@ -30,6 +32,7 @@ public class HttpRequestParser {
             return null;
         }
 
+        // Parse the request line (Method, Path, Version)
         final String[] requestLine = rawLine.split(" ");
         final String rawPath = requestLine[1];
         final int queryStringIndex = rawPath.indexOf('?');
@@ -47,6 +50,7 @@ public class HttpRequestParser {
 
         final HttpHeader httpHeader = new HttpHeader();
 
+        // Parse headers until an empty line is encountered
         String line;
         while (true) {
             line = readLine(in);
@@ -66,6 +70,7 @@ public class HttpRequestParser {
 
         httpRequest.setHeader(httpHeader);
 
+        // Read the request body based on Content-Length
         final String contentLengthStr = httpHeader.getContentLength();
         if (contentLengthStr != null) {
             final int contentLength = Integer.parseInt(contentLengthStr.trim());
@@ -90,9 +95,10 @@ public class HttpRequestParser {
 
     /**
      * InputStream으로 들어오는 값들을 한줄까지만 읽어서 String으로 리턴하는 헬퍼.
-     * @param in InputStream
-     * @return 읽어온 문자열
-     * @throws IOException 입력값 읽을 때 문제 발생시 예외 터짐
+     * A helper method that reads a single line from the InputStream and returns it as a String.
+     * @param in InputStream (The InputStream to read from.)
+     * @return 읽어온 문자열 (The string read from the stream.)
+     * @throws IOException 입력값 읽을 때 문제 발생시 예외 터짐 (If an error occurs during reading.)
      */
     private static String readLine(final InputStream in) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -114,6 +120,11 @@ public class HttpRequestParser {
         return bos.toString(StandardCharsets.UTF_8);
     }
 
+    /**
+     * Parses the raw query string into a map of keys and lists of values.
+     * @param rawQuery The raw, undecoded query string.
+     * @return A map containing decoded query parameters.
+     */
     private static Map<String, List<String>> parseQuery(final String rawQuery) {
         if (rawQuery == null || rawQuery.isBlank()) {
             return Collections.emptyMap();
