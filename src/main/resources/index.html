@@ -1,3 +1,6 @@
+
+<!-- This HTML made by Gemini -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,7 +62,7 @@
                         <td onclick='viewPost(${JSON.stringify(post).replace(/"/g, '&quot;')})' style="cursor:pointer; color:blue;">${post.title}</td>
                         <td>${post.author}</td>
                         <td>
-                            <button onclick="fillForm(${JSON.stringify(post).replace(/"/g, '&quot;')})">수정</button>
+                            <button onclick="fillForm(${JSON.stringify(post).replace(/"/g, '&quot;')})">edit</button>
                             <button onclick="deletePost(${post.id})">delete</button>
                         </td>
                     `;
