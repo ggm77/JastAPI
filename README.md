@@ -155,4 +155,4 @@ CREATE TABLE post(
 ## 5. UML Diagrams
 
 <img src="./docs/images/flow.png" width="700" alt="flow" />
-
+<img src="./docs/images/uml.png" width="1000" alt="uml" />
