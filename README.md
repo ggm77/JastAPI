@@ -48,11 +48,10 @@ serialize and deserialize incoming JSON requests from the client into Java objec
 ### 2.2 Internal Structure
 
 > Package scanning and bean registration process during server startup.
-<img src="https://github.com/user-attachments/assets/8c9691aa-7761-486c-b7d2-b57e8fb61b9f" width="700" alt="Initialization Flow" />
+<img src="./docs/images/serverInit.png" width="700" alt="Initialization Flow" />
 
 > Processing flow when a request is received.
-<img src="https://github.com/user-attachments/assets/2a586247-5e55-4c48-ba8c-33b1b34ac89c" width="700" alt="Runtime Flow" />
-
+<img src="./docs/images/backendFlow.png" width="700" alt="Runtime Flow" />
 
 ## 3. Board CRUD App
 This is a sample project demonstrating how the `JastAPI` framework can actually be utilized.
@@ -109,21 +108,49 @@ CREATE TABLE post(
 ```
 
 ### 4.3 How to Run the Server
-1. Run the following command in the root directory of the project (the folder where the README.md file is located).
-
+> 1. Run the following command in the root directory of the project (the folder containing the README.md file).
+> 
 > `./gradlew build`
-2. Move to the location of the generated JAR file using the command below.
+
+
+> 2. Navigate to the location of the generated JAR file using the command below.
+> 
 > `cd build/libs`
-3. Run the server using the command below. (You can terminate it with `^C` or `Ctrl + C`.)
+
+> 3. Run the server using the command below. (You can terminate it with `^C` or `Ctrl + C`.)
+> 
 > `java -jar JastAPI-1.0.0.jar`
-4. If the message `Server started on port 8080...` is printed in the console, the server has started successfully.
+
+> 4. If the message `[INFO] Server started on port 8080...` is printed in the console, the server has started successfully.
+> <img src="./docs/images/serverlog.png" width="700"  alt="serverLog"/>
 
 ### 4.4 Service Access and Usage
 
-1. Open a web browser and enter `http://localhost:8080` in the address bar.
-2. You can register, read, update, or delete posts through the UI displayed on the screen.
+> 1. Open a web browser and enter `http://localhost:8080` in the address bar.
 
-### _**In this project, passwords are saved as plaintext. Never enter a real password.**_
+> 2. You can register, view, edit, or delete posts through the UI displayed on the screen.
+> <img src="./docs/images/main.png" width="700" alt="mainPage" />
+
+### _**In this project, passwords are stored in plaintext. Never enter a real password.**_
+
+> 3. As shown in the image below, enter the post title, author, password, and content, then click the `save` button to save it.
+> <img src="./docs/images/createPost.png" width="300" alt="createPost" />
+> <img src="./docs/images/createPostResult.png" width="300" alt="createPost" />
+
+> 4. You can check the changes in the list below, and click on the title to view the content.
+> <img src="./docs/images/createPostResultList.png" width="300" alt="createPostResultList" />
+> <img src="./docs/images/createPostResultContent.png" width="300" alt="createPostResultList" />
+
+> 5. Clicking the `edit` button in the post list loads the current post content. You can modify it by making appropriate changes and entering the correct password.
+> <img src="./docs/images/editPost.png" width="300" alt="editPost" />
+> <img src="./docs/images/editPostResult.png" width="300" alt="editPostResult" />
+
+> 6. You can delete a post by clicking the `delete` button in the post list and entering the correct password.
+> <img src="./docs/images/deletePost.png" width="300" alt="deletePost" />
+> <img src="./docs/images/deletePostResult.png" width="300" alt="deletePostResult" />
+
+> 7. If an invalid value is entered during post registration, modification, or deletion, a 400 error occurs.
+> <img src="./docs/images/400.png" width="300" alt="HTTP400" />
 
 ## 5. UML Diagrams
 

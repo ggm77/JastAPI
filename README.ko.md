@@ -45,10 +45,10 @@ HTTP응답에서 적절한 값을 파싱할 수 있습니다.
 ### 2.2 내부 구조
 
 > 서버 시작 시 패키지 스캔 및 빈 등록 과정입니다.
-<img src="https://github.com/user-attachments/assets/8c9691aa-7761-486c-b7d2-b57e8fb61b9f" width="700" alt="Initialization Flow" />
+<img src="./docs/images/serverInit.png" width="700" alt="Initialization Flow" />
 
 > 요청이 들어왔을 때의 처리 흐름입니다.
-<img src="https://github.com/user-attachments/assets/2a586247-5e55-4c48-ba8c-33b1b34ac89c" width="700" alt="Runtime Flow" />
+<img src="./docs/images/backendFlow.png" width="700" alt="Runtime Flow" />
 
 
 ## 3. 게시판 CRUD 앱
@@ -106,21 +106,51 @@ CREATE TABLE post(
 ```
 
 ### 4.3 서버 실행 방법
-1. 프로젝트의 루트 디렉토리(README.md 파일이 존재하는 폴더)에서 아래 명령어를 실행합니다.
-
+> 1. 프로젝트의 루트 디렉토리(README.md 파일이 존재하는 폴더)에서 아래 명령어를 실행합니다.
+> 
 > `./gradlew build`
-2. 아래 명령어를 통해 생성된 JAR 파일 위치로 이동합니다.
+
+
+> 2. 아래 명령어를 통해 생성된 JAR 파일 위치로 이동합니다.
+> 
 > `cd build/libs`
-3. 아래 명령어를 통해 서버를 실행합니다. (`^C` 또는 `Ctrl + C`를 통해 종료 할 수 있습니다.)
+
+> 3. 아래 명령어를 통해 서버를 실행합니다. (`^C` 또는 `Ctrl + C`를 통해 종료 할 수 있습니다.)
+> 
 > `java -jar JastAPI-1.0.0.jar`
-4. 콘솔에 `Server started on port 8080...` 메세지가 출력된다면 정상적으로 서버가 구동된 것입니다.
+
+> 4. 콘솔에 `Server started on port 8080...` 메세지가 출력된다면 정상적으로 서버가 구동된 것입니다.
+> <img src="./docs/images/serverlog.png" width="700"  alt="serverLog"/>
 
 ### 4.4 서비스 접속 및 이용
 
-1. 웹 브라우저를 열고 주소창에 `http://localhost:8080`을 입력합니다.
-2. 화면에 표시된 UI를 통해 게시글을 등록하거나 조회, 수정, 삭제 할 수 있습니다.
+> 1. 웹 브라우저를 열고 주소창에 `http://localhost:8080`을 입력합니다.
+
+
+> 2. 화면에 표시된 UI를 통해 게시글을 등록하거나 조회, 수정, 삭제 할 수 있습니다.
+> <img src="./docs/images/main.png" width="700" alt="mainPage" />
 
 ### _**본 프로젝트에서 비밀번호는 평문으로 저장됩니다. 절대로 실제 비밀번호를 입력하지 마세요.**_
+
+> 3. 아래 사진과 같이 게시글의 제목, 글쓴이, 비밀번호, 내용을 작성하고 `save` 버튼을 누르면 저장됩니다.
+> <img src="./docs/images/createPost.png" width="300" alt="createPost" />
+> <img src="./docs/images/createPostResult.png" width="300" alt="createPost" />
+
+> 4. 변경 사항은 아래 리스트에서 확인 할 수 있고, 제목을 누르면 내용을 확인 할 수 있습니다.
+> <img src="./docs/images/createPostResultList.png" width="300" alt="createPostResultList" />
+> <img src="./docs/images/createPostResultContent.png" width="300" alt="createPostResultList" />
+
+> 5. 게시물 리스트에서 `edit` 버튼을 누르면 현재의 게시물 내용이 들어가고, 내용을 적절히 수정하고 비밀번호를 올바르게 작성하면
+> 수정이 가능합니다.
+> <img src="./docs/images/editPost.png" width="300" alt="editPost" />
+> <img src="./docs/images/editPostResult.png" width="300" alt="editPostResult" />
+
+> 6. 게시물 리스트에서 `delete` 버튼을 누르고 올바른 비밀번호를 입력하면 게시물 삭제가 가능합니다.
+> <img src="./docs/images/deletePost.png" width="300" alt="deletePost" />
+> <img src="./docs/images/deletePostResult.png" width="300" alt="deletePostResult" />
+
+> 7. 만약 게시물 등록, 수정, 삭제 중에 적절하지 않은 값이 입력 된다면 400 에러가 발생합니다.
+> <img src="./docs/images/400.png" width="300" alt="HTTP400" />
 
 ## 5. UML 다이어그램
 
