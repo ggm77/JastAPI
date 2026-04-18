@@ -154,6 +154,14 @@ CREATE TABLE post(
 
 ## 5. UML 다이어그램
 
-<img src="./docs/images/flow.png" width="700" alt="flow" />
-<img src="./docs/images/uml.png" width="1000" alt="uml" />
+> <img src="./docs/images/flow.png" width="700" alt="flow" />
+> 점선: 의존관계
+>
+> 실선: 연관관계
+> 
+> 초록 블럭: 컨테이너가 관리하는 빈(Bean) (@Component를 통해 DI 됨)
+>
+> 흰색 블럭: 일반 자바 객체
 
+> <img src="./docs/images/uml.png" width="1000" alt="uml" />
+> 이미지를 클릭하면 원본 크기로 볼 수 있습니다.
