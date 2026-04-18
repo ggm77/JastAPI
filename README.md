@@ -79,7 +79,7 @@ which is an example project existing under the `com.seohamin` package.
 
 Furthermore, this framework requires `Jackson Databind 2.21.2`. It must be added to your project's dependencies.
 
-### Basic Server Operation
+### 4.2 Basic Server Operation
 `JastAPI` uses its own WAS, so you can immediately run the server using the code below.
 ```java
 import com.seohamin.jastapi.JastApiApplication;
