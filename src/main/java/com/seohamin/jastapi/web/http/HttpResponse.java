@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Http 응답에 대한 정보를 저장할 클래스
+ * A class that encapsulates the information for an HTTP response.
  */
 public class HttpResponse {
     private String version;
