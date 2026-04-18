@@ -286,6 +286,7 @@ If you want to use it simply, you can access the deployed project via the link b
 Before running the application, MariaDB must be running locally.
 You need to create a database user according to the connection information below,
 or appropriately modify the connecting user's information in `MariaDbConnectionProvider.java`.
+(I intended to retrieve the connection information from an external configuration file, but due to time constraints, it was implemented this way.)
 
 - **URL**: `jdbc:mariadb://localhost:3306/jastapi_example`
 - **User ID**: `jastapi`

@@ -283,6 +283,7 @@ throw new HttpResponseException(ErrorResponse.createBadRequest("HTTP/1.1"));
 
 애플리케이션을 실행하기 전, 로컬에서 MariaDB가 실행 중이어야 하며, 아래 접속 정보에 맞게 데이터 베이스 유저를 생성하거나,
 `MariaDbConnectionProvider.java`에서 접속 유저의 정보를 적절히 수정해야 합니다.
+(외부 설정 파일에서 연결 정보를 가지고 오게 하고 싶었으나, 시간이 부족하여 이렇게 구현되었습니다.)
 
 - **URL**: `jdbc:mariadb://localhost:3306/jastapi_example`
 - **유저 ID**: `jastapi`
