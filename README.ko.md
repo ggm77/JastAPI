@@ -107,7 +107,7 @@ public class PostService {
     private final PostRepository postRepository;
     
     // 생성자를 통한 DI
-    public Postservice(PostRepository postRepository) {
+    public PostService(PostRepository postRepository) {
         this.postRepository = postRepository;
     }
     
@@ -256,6 +256,7 @@ public class PostRequest {
 
 ### 4.8 예외 처리
 `HttpResponseException` 클래스를 이용하면, 비즈니스 로직에서 바로 400번대나 500번대 HTTP 응답코드를 가진 응답을 전송시킬 수 있습니다.
+이외에 일반 예외 (NPE 등)이 발생하면 디스패쳐에서 500 INTERNAL_SERVER_ERROR로 래핑되어서 응답합니다.
 
 ```java
 throw new HttpResponseException(ErrorResponse.createBadRequest("HTTP/1.1"));

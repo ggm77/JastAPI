@@ -108,7 +108,7 @@ public class PostService {
     private final PostRepository postRepository;
 
     // DI via constructor
-    public Postservice(PostRepository postRepository) {
+    public PostService(PostRepository postRepository) {
         this.postRepository = postRepository;
     }
 
@@ -258,6 +258,7 @@ public class PostRequest {
 
 ### 4.8 Exception Handling
 By using the `HttpResponseException` class, you can instantly send a response with a 400-level or 500-level HTTP status code directly from your business logic.
+In addition, if a general exception (e.g., NPE) occurs, it is wrapped by the Dispatcher and returned as a 500 INTERNAL_SERVER_ERROR response.
 
 ```java
 throw new HttpResponseException(ErrorResponse.createBadRequest("HTTP/1.1"));
