@@ -66,7 +66,202 @@ HTTP응답에서 적절한 값을 파싱할 수 있습니다.
 - **MariaDbConnectionProvider.java & PostRepository.java**: 데이터베이스와 연결을
 담당하고, 실질적인 데이터를 조작합니다.
 
-## 4. 게시판 CRUD 앱 실행 가이드
+## 4. JastAPI 백엔드 프레임워크 사용 가이드
+`JastAPI`는 직관적인 어노테이션을 통해 간편하게 서버를 구현 할 수 있게 하는걸 목표로 개발되었습니다.
+또한, 본 백엔드 프레임워크는 Spring Boot에서 많은 영향을 받았기 때문에 대부분의 사용
+방법이 유사합니다.
+
+### 4.1 사전 준비
+본 프레임워크의 클래스들은 모두 `src/main/java/com/seohamin/jastapi` 하위에 있습니다.
+따라서 `java` 폴더 아래에 `com` 패키지부터 통째로 복사하여 프로젝트의 적절한 곳에 배치한 후,
+`com.seohamin` 패키지 하위에 존재하는 예제 프로젝트인 `jastapi_example` 패키지를 삭제하는 것을 권장합니다.
+
+또한 이 프레임워크는 `Jackson Databind 2.21.2`를 필요로 합니다. 프로젝트의 의존성에 추가되어야 합니다.
+
+### 4.2 기본 서버 동작
+`JastAPI`는 자체 WAS를 이용하므로 아래 코드를 통해 즉시 서버를 실행 시킬 수 있습니다.
+```java
+import com.seohamin.jastapi.JastApiApplication;
+
+public class Main {
+    public static void main(String[] args) {
+        // 첫 번째 인자: 패키지 스캔의 기준이 되는 클래스 - 이 클래스가 포함된 패키지의 하위에 존재하는 클래스들을 스캔합니다.
+        // 두 번째 인자: 로컬호스트(127.0.0.1) 전용 바인딩 여부 (false면 0.0.0.0)
+        // 세 번째 인자: 사용할 포트 번호
+        JastApiApplication.run(Main.class, false, 8080);
+    }
+}
+```
+
+### 4.3 의존성 주입 (DI)
+`JastAPI`는 서버 구동시 프로젝트를 스캔하며 `@Component` 어노테이션이 달린 클래스를 찾아,
+싱글톤 빈(Bean)으로 관리합니다. 생성자를 통해 필요한 객체를 자동으로 주입 받을 수 있습니다.
+**단, 의존성 주입을 받을 클래스는 단 하나의 생성자만 가지고 있어야 합니다.**
+```java
+import com.seohamin.jastapi.annotation.core.Component;
+
+@Component
+public class PostService {
+    
+    // 주입 받은 객체를 저장할 필드
+    private final PostRepository postRepository;
+    
+    // 생성자를 통한 DI
+    public Postservice(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
+    
+    // 예시
+    public void printPost(Long id) {
+        // 주입받은 객체의 메서드를 바로 사용가능
+        System.out.println(postRepository.findById(id));
+    }
+}
+```
+
+`JastAPI`에서도 인터페이스를 정의하고, 해당 인터페이스만 주입 받아 어떤 구현체를 사용하는지 숨길 수 있습니다.
+단, 구현체가 여러개일 경우 어떤 구현체를 주입해야 할지 정하지 못하기 때문에, 현재는 인터페이스당 하나의 구현체만 존재할 수 있습니다.
+
+```java
+// MariaDbConnectionProvider.java
+
+import com.seohamin.jastapi.annotation.core.Component;
+import com.seohamin.jastapi.db.ConnectionProvider;
+
+import java.sql.Connection;
+
+@Component
+public class MariaDbConnectionProvider implements ConnectionProvider {
+    @Override
+    public Connection getConnection() {
+        // 생략..
+    }
+
+    @Override
+    public void releaseConnection(Connection connection) {
+        // 생략..
+    }
+}
+
+// PostRepository.java
+import com.seohamin.jastapi.annotation.core.Component;
+import com.seohamin.jastapi.db.ConnectionProvider;
+
+import java.sql.Connection;
+
+@Component
+public class PostRepository {
+
+    // 객체 주입받을 필드
+    private final ConnectionProvider connection;
+
+    // 생성자를 통해 DI
+    public PostRepository(ConnectionProvider connectionProvider) {
+        this.connection = connectionProvider;
+    }
+
+    // MariaDbConnectionProvider에서 오버라이딩한 메서드를 자동으로 사용
+    private Connection getConnection() {
+        return connection.getConnection();
+    }
+}
+```
+
+
+### 4.4 라우팅 설정
+`@Component`를 통해 빈으로 등록된 클래스 내부에서,
+HTTP 메서드에 맞는 어노테이션(`@Get`, `@Post`, `@Patch`, `@Delete`)을 사용하여 라우팅을 설정합니다.
+
+```java
+@Get("/api/post/{id}")
+public PostResponse getPost(
+        @PathVariable("id") String id
+) {
+    return postService.getPost(id);
+}
+```
+
+### 4.5 클라이언트 요청 파싱
+`@PathVariable`, `@RequestParam`, `@RequestBody` 어노테이션을 통해서
+클라이언트가 전송하는 요청을 자동으로 파싱할 수 있습니다.
+- **`@PathVariable`**: URL 경로에 포함된 동적 값을 추출합니다. (동시에 여러개 사용가능)
+- **`@RequestParam`**: URL의 쿼리 스트링(Query String) 값을 추출합니다.
+- **`@RequestBody`**: HTTP Body로 들어오는 JSON 데이터를 자바 객체로 역직렬화합니다.
+
+```java
+@Patch("/api/post/{id}/content/{contentId}")
+public PostResponse updatePost(
+        @PathVariable(value="id") String id, // 어노테이션의 value는 꼭 엔드포인트에 적힌 값과 같아야 함.
+        @PathVariable(value="contentId") String contentId, // PathVariable은 String으로만 받을 수 있음.
+        @RequestParam(value="query") List<String> query, // RequestParam은 List<String>으로만 받을 수 있음.
+        @RequestBody PostRequest postRequest // HTTP request body를 PostRequest에 담아서 줌
+) {
+    return postService.updatePost(id, postRequest);
+}
+```
+
+### 4.6 HttpRequest & HttpResponse
+컨트롤러에서 `HttpRequest`를 매개변수로 가진 경우, 자동으로 클라이언트에게 받은 요청을 그대로 전달합니다.
+컨트롤러에서 리턴 타입이 `HttpResponse`인 경우, 개발자가 리턴한 `HttpResponse`를 다른 추가 가공 없이 그대로 리턴합니다.
+
+```java
+@Get("/")
+public HttpResponse getHomePage(HttpRequest httpRequest) {
+    byte[] body = httpRequest.getBody();
+    
+    // Build HttpResponse's http header.
+    final HttpHeader responseHeader = new HttpHeader();
+    responseHeader.add("Content-Type", "text/html; charset=utf-8");
+    responseHeader.add("Content-Length", String.valueOf(body.length));
+    responseHeader.add("Connection", "keep-alive");
+    responseHeader.add("Cache-Control", "no-cache, no-store, must-revalidate");
+    responseHeader.add("Date", HttpTime.getCurrentTime());
+
+    // Build HttpResponse with body and http header.
+    final HttpResponse httpResponse = new HttpResponse();
+    httpResponse.setStatusCode(HttpStatus.OK.getStatusCode());
+    httpResponse.setStatusMessage(HttpStatus.OK.getStatusMessage());
+    httpResponse.setVersion("HTTP/1.1");
+    httpResponse.setBody(body);
+    httpResponse.setHeader(responseHeader);
+
+    // return HttpResponse directly.
+    return httpResponse;
+}
+```
+
+### 4.7 직렬화와 역직렬화
+컨트롤러의 리턴 타입이 일반 자바 객체이거나, `@RequestBody`가 정의된 변수의 타입이 일반 자바 객체인 경우,
+각각 자동으로 직렬화, 역직렬화를 진행합니다.
+이때 `Jackson Databind`를 통해서 변환 되기 때문에, 꼭 기본 생성자와 각 필드에 대한 게터가 존재해야합니다.
+```java
+public class PostRequest {
+    // 필드
+    private String title;
+    private String content;
+    private String author;
+    private String password;
+
+    // 직렬화를 위한 기본 생성자
+    public PostRequest() {}
+
+    // 직렬화를 위한 게터
+    public String getTitle() { return title; }
+    public String getContent() { return content; }
+    public String getAuthor() { return author; }
+    public String getPassword() { return password; }
+
+}
+```
+
+### 4.8 예외 처리
+`HttpResponseException` 클래스를 이용하면, 비즈니스 로직에서 바로 400번대나 500번대 HTTP 응답코드를 가진 응답을 전송시킬 수 있습니다.
+
+```java
+throw new HttpResponseException(ErrorResponse.createBadRequest("HTTP/1.1"));
+```
+
+## 5. 게시판 CRUD 앱 실행 가이드
 
 아래 가이드는 `JastAPI`의 예제 프로젝트인 게시판 CRUD 프로젝트를 실행시키는 가이드입니다.
 만약 간단하게 이용하고 싶으시다면 아래 링크를 통해 배포 중인 프로젝트를 이용할 수 있습니다.
@@ -75,7 +270,7 @@ HTTP응답에서 적절한 값을 파싱할 수 있습니다.
 > 
 > *본 프로젝트에서 비밀번호는 평문으로 저장됩니다. 절대로 실제 비밀번호를 입력하지 마세요.
 
-### 4.1 사전 준비
+### 5.1 사전 준비
 
 - **Java**: JDK 21
 - **Database**: MariaDB
@@ -83,7 +278,7 @@ HTTP응답에서 적절한 값을 파싱할 수 있습니다.
 
 > MariaDB를 설치 하지 않아도 서버를 구동시 `index.html` 서빙까지는 작동합니다. 
 
-### 4.2 데이터베이스 설정
+### 5.2 데이터베이스 설정
 
 애플리케이션을 실행하기 전, 로컬에서 MariaDB가 실행 중이어야 하며, 아래 접속 정보에 맞게 데이터 베이스 유저를 생성하거나,
 `MariaDbConnectionProvider.java`에서 접속 유저의 정보를 적절히 수정해야 합니다.
@@ -105,7 +300,7 @@ CREATE TABLE post(
 );
 ```
 
-### 4.3 서버 실행 방법
+### 5.3 서버 실행 방법
 > 1. 프로젝트의 루트 디렉토리(README.md 파일이 존재하는 폴더)에서 아래 명령어를 실행합니다.
 > 
 > `./gradlew build`
@@ -122,7 +317,7 @@ CREATE TABLE post(
 > 4. 콘솔에 `Server started on port 8080...` 메세지가 출력된다면 정상적으로 서버가 구동된 것입니다.
 > <img src="./docs/images/serverlog.png" width="700"  alt="serverLog"/>
 
-### 4.4 서비스 접속 및 이용
+### 5.4 서비스 접속 및 이용
 
 > 1. 웹 브라우저를 열고 주소창에 `http://localhost:8080`을 입력합니다.
 
@@ -152,7 +347,7 @@ CREATE TABLE post(
 > 7. 만약 게시물 등록, 수정, 삭제 중에 적절하지 않은 값이 입력 된다면 400 에러가 발생합니다.
 > <img src="./docs/images/400.png" width="300" alt="HTTP400" />
 
-## 5. UML 다이어그램
+## 6. UML 다이어그램
 
 > <img src="./docs/images/flow.png" width="700" alt="flow" />
 > 점선: 의존관계
