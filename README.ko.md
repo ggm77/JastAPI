@@ -11,6 +11,12 @@
 | 서하민 | 22300378 | 백엔드 프레임워크 개발, 게시판 CRUD 앱 구조 설계 및 구현 |
 | 손동현 | 22300385 | 게시판 CRUD 앱 구현                       |
 
+> **유튜브 발표 영상**
+> 
+> <a href="https://youtu.be/4t3AXDRdrkw">https://youtu.be/4t3AXDRdrkw</a>
+> 
+> 영상 설명이 부족하게 느껴지는 부분이 있다면, README.md에 기재된 내용을 확인해 주세요.
+
 ## 개발 버전과 의존성
 - **Java**: `21`
 - **Build Tool**: `Gradle 9.4.0`

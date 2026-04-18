@@ -13,6 +13,12 @@ _*Note: The Korean version is the original document and may offer the most natur
 | Hamin SEO (서하민)       | 22300378 | Backend framework development, Board CRUD app architecture design and implementation |
 | Donghyeon SON (손동현)   | 22300385 | Board CRUD app implementation                       |
 
+> **Presentation youtube video link**
+> 
+> <a href="https://youtu.be/4t3AXDRdrkw">https://youtu.be/4t3AXDRdrkw</a>
+> 
+> If any parts of the presentation are unclear, please consult the documentation in the README.md. 
+
 ## Development Version and Dependencies
 - **Java**: `21`
 - **Build Tool**: `Gradle 9.4.0`
