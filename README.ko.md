@@ -154,7 +154,5 @@ CREATE TABLE post(
 
 ## 5. UML 다이어그램
 
-### 5.1 JastAPI
-
-### 5.2 게시판 CRUD 앱
+<img src="./docs/images/flow.png" width="700" alt="flow" />
 
