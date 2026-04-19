@@ -366,5 +366,36 @@ CREATE TABLE post(
 >
 > 흰색 블럭: 일반 자바 객체
 
-> <img src="./docs/images/uml.png" width="1000" alt="uml" />
-> 이미지를 클릭하면 원본 크기로 볼 수 있습니다.
+> 클래스 성격 및 관계 (Class Types & Relationships)
+>
+> - 스테레오타입: 인터페이스는 `<<interface>>`, 열거형은 `<<enumeration>>`, 예외 클래스는 `<<exception>>`으로 분류합니다.
+>
+> - 상속 및 구현: 클래스 간의 관계를 시각적 화살표 대신 클래스 명 옆에 `(extends Parent)` 또는 `(implements Interface)` 형식으로 명시합니다.
+>
+> 멤버 및 메서드 (Members & Methods)
+>
+> - Static 멤버: 정적 변수나 메서드는 밑줄(underline)을 그어 표시합니다.
+>
+> - 생성자: 객체 생성을 담당하는 메서드 앞에는 `<<create>>`를 붙입니다.
+>
+> - 어노테이션: 클래스, 메서드, 파라미터에 적용된 어노테이션은 `<<@Annotation>>` 형식으로 표기합니다.
+>
+> 예외 명시 (Exception Handling)
+>
+> - 메서드 실행 중 발생(throw)할 수 있는 예외는 메서드 시그니처 뒤에 `{exception = ExceptionName}` 형식을 사용하여 명시합니다.
+
+<img src="./docs/images/uml/UML-01.jpg" width="700" alt="UML01" />
+<img src="./docs/images/uml/UML-02.jpg" width="700" alt="UML02" />
+<img src="./docs/images/uml/UML-03.jpg" width="700" alt="UML03" />
+<img src="./docs/images/uml/UML-04.jpg" width="700" alt="UML04" />
+<img src="./docs/images/uml/UML-05.jpg" width="700" alt="UML05" />
+<img src="./docs/images/uml/UML-06.jpg" width="700" alt="UML06" />
+<img src="./docs/images/uml/UML-07.jpg" width="700" alt="UML07" />
+<img src="./docs/images/uml/UML-08.jpg" width="700" alt="UML08" />
+<img src="./docs/images/uml/UML-09.jpg" width="700" alt="UML09" />
+<img src="./docs/images/uml/UML-10.jpg" width="700" alt="UML10" />
+<img src="./docs/images/uml/UML-11.jpg" width="700" alt="UML11" />
+<img src="./docs/images/uml/UML-12.jpg" width="700" alt="UML12" />
+<img src="./docs/images/uml/UML-13.jpg" width="700" alt="UML13" />
+<img src="./docs/images/uml/UML-13.jpg" width="700" alt="UML14" />
+

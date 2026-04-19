@@ -360,5 +360,35 @@ CREATE TABLE post(
 
 > <img src="./docs/images/flow.png" width="700" alt="flow" />
 
-> <img src="./docs/images/uml.png" width="1000" alt="uml" />
-> Click the image to view it in full size.
+> Class Stereotypes & Relationships
+>
+> - Stereotypes: Classes are categorized using `<<interface>>`, `<<enumeration>>`, `<<exception>>`, and `<<annotation>>`.
+>
+> - Inheritance & Implementation: Relationships are explicitly stated next to the class name as `(extends Parent)` or `(implements Interface)` for better readability within the diagram blocks.
+>
+> Members & Methods
+>
+> - Static Members: Static fields and methods are denoted with an underline.
+>
+> - Constructors: Constructor methods are identified by the `<<create>>` prefix.
+>
+> - Annotations: Annotations applied to any element are represented as stereotypes, such as `<<@Component>>` or `<<@Patch("/api/post/{id}")>>`.
+>
+> Exception Specifications
+>
+> - Potential exceptions thrown by a method are specified at the end of the method signature using the `{exception = ExceptionName}` curly brace notation.
+
+<img src="./docs/images/uml/UML-01.jpg" width="700" alt="UML01" />
+<img src="./docs/images/uml/UML-02.jpg" width="700" alt="UML02" />
+<img src="./docs/images/uml/UML-03.jpg" width="700" alt="UML03" />
+<img src="./docs/images/uml/UML-04.jpg" width="700" alt="UML04" />
+<img src="./docs/images/uml/UML-05.jpg" width="700" alt="UML05" />
+<img src="./docs/images/uml/UML-06.jpg" width="700" alt="UML06" />
+<img src="./docs/images/uml/UML-07.jpg" width="700" alt="UML07" />
+<img src="./docs/images/uml/UML-08.jpg" width="700" alt="UML08" />
+<img src="./docs/images/uml/UML-09.jpg" width="700" alt="UML09" />
+<img src="./docs/images/uml/UML-10.jpg" width="700" alt="UML10" />
+<img src="./docs/images/uml/UML-11.jpg" width="700" alt="UML11" />
+<img src="./docs/images/uml/UML-12.jpg" width="700" alt="UML12" />
+<img src="./docs/images/uml/UML-13.jpg" width="700" alt="UML13" />
+<img src="./docs/images/uml/UML-13.jpg" width="700" alt="UML14" />
