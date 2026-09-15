@@ -19,7 +19,7 @@ It is heavily inspired by Spring Boot.
 It features a built-in WAS, enabling you to run the server with just a single line of code without complex external configurations.
 
 > This repository originally also contained a Board CRUD demo app (`jastapi_example`) built on top of `JastAPI`.
-> It has since been removed so this repository can be published as a standalone framework.
+> It has since been removed so this repository can be published as a standalone framework, and now lives in its own repository: **[JastAPI-example](https://github.com/ggm77/JastAPI-example)**.
 
 ## 2. JastAPI (Backend Framework)
 Implemented with inspiration from Spring Boot's operating mechanism,
@@ -51,6 +51,8 @@ serialize and deserialize incoming JSON requests from the client into Java objec
 ## 3. JastAPI Backend Framework Usage Guide
 `JastAPI` was developed with the goal of allowing developers to easily implement a server through intuitive annotations.
 Additionally, since this backend framework is heavily inspired by Spring Boot, most of its usage is quite similar.
+
+> For a full working example (a Board CRUD app), see **[JastAPI-example](https://github.com/ggm77/JastAPI-example)**.
 
 ### 3.1 Installation
 `JastAPI` is distributed via [JitPack](https://jitpack.io/#ggm77/JastAPI).

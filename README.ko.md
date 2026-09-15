@@ -17,7 +17,7 @@ Spring Boot로부터 많은 영향을 받았습니다.
 복잡한 외부 설정 없이 단 한 줄의 코드로 서버를 구동할 수 있도록 자체 WAS를 내장하고 있습니다.
 
 > 이 저장소에는 원래 `JastAPI`를 활용한 게시판 CRUD 데모 앱(`jastapi_example`)도 함께 포함되어 있었습니다.
-> 이 저장소를 독립적인 프레임워크로 배포하기 위해 해당 예제는 삭제되었습니다.
+> 이 저장소를 독립적인 프레임워크로 배포하기 위해 해당 예제는 삭제되었고, 이제 별도의 저장소인 **[JastAPI-example](https://github.com/ggm77/JastAPI-example)**에서 관리됩니다.
 
 ## 2. JastAPI (백엔드 프레임워크)
 Spring Boot의 동작 방식에서 영감을 받아 구현되었으며,
@@ -48,6 +48,8 @@ HTTP응답에서 적절한 값을 파싱할 수 있습니다.
 `JastAPI`는 직관적인 어노테이션을 통해 간편하게 서버를 구현 할 수 있게 하는걸 목표로 개발되었습니다.
 또한, 본 백엔드 프레임워크는 Spring Boot에서 많은 영향을 받았기 때문에 대부분의 사용
 방법이 유사합니다.
+
+> 실제 동작하는 예제(게시판 CRUD 앱)는 **[JastAPI-example](https://github.com/ggm77/JastAPI-example)** 저장소를 참고하세요.
 
 ### 3.1 설치
 `JastAPI`는 [JitPack](https://jitpack.io/#ggm77/JastAPI)을 통해 배포됩니다.
