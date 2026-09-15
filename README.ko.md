@@ -3,13 +3,7 @@
 [[English]](./README.md) | [한국어]
 
 ## 프로젝트 제목
-**백엔드 프레임워크 `JastAPI`와 게시판 CRUD 앱**
-
-## 팀 멤버
-| 이름  | 학번       | 담당                                  |
-|:----|:---------|:------------------------------------|
-| 서하민 | 22300378 | 백엔드 프레임워크 개발, 게시판 CRUD 앱 구조 설계 및 구현 |
-| 손동현 | 22300385 | 게시판 CRUD 앱 구현                       |
+**백엔드 프레임워크 `JastAPI`**
 
 ## 개발 버전과 의존성
 - **Java**: `21`
@@ -22,8 +16,8 @@
 Spring Boot로부터 많은 영향을 받았습니다.
 복잡한 외부 설정 없이 단 한 줄의 코드로 서버를 구동할 수 있도록 자체 WAS를 내장하고 있습니다.
 
-본 프로젝트는 크게 프레임워크 코어인 `JastAPI`와
-이를 활용한 데모 애플리케이션인 `jastapi_example` 두 부분으로 구성되어있습니다.
+> 이 저장소에는 원래 `JastAPI`를 활용한 게시판 CRUD 데모 앱(`jastapi_example`)도 함께 포함되어 있었습니다.
+> 이 저장소를 독립적인 프레임워크로 배포하기 위해 해당 예제는 삭제되었습니다.
 
 ## 2. JastAPI (백엔드 프레임워크)
 Spring Boot의 동작 방식에서 영감을 받아 구현되었으며,
@@ -50,35 +44,18 @@ HTTP응답에서 적절한 값을 파싱할 수 있습니다.
 > 요청이 들어왔을 때의 처리 흐름입니다.
 <img src="./docs/images/backendFlow.png" width="700" alt="Runtime Flow" />
 
-
-## 3. 게시판 CRUD 앱
-`JastAPI` 프레임워크가 실제로 어떻게 활용 될 수 있는지 보여주는 샘플 프로젝트입니다.
-기본적인 게시글 추가, 조회, 수정, 삭제(CRUD) 기능이 구현되어 있습니다.
-또한 DB와 연동하여 데이터를 영속화합니다.
-
-### 3.1 주요 구성 요소
-
-- **Main.java**: 애플리케이션의 진입점으로서 `JastApiApplication.run()` 메서드를 통해서
-서버를 작동시킵니다.
-- **HomeController.java**: 루트 경로(`/`)로 접속시 프론트엔드 역할을 하는 `index.html` 파일을 서빙합니다.
-- **PostController.java**: `/api/post` 엔드포인트를 제공하며, HTTP 요청을 받아 서비스 레이어로 전달합니다.
-- **PostService.java**: 컨트롤러에서 내려온 HTTP 요청 정보를 바탕으로 각종 로직에 따라 응답을 생성합니다.
-- **MariaDbConnectionProvider.java & PostRepository.java**: 데이터베이스와 연결을
-담당하고, 실질적인 데이터를 조작합니다.
-
-## 4. JastAPI 백엔드 프레임워크 사용 가이드
+## 3. JastAPI 백엔드 프레임워크 사용 가이드
 `JastAPI`는 직관적인 어노테이션을 통해 간편하게 서버를 구현 할 수 있게 하는걸 목표로 개발되었습니다.
 또한, 본 백엔드 프레임워크는 Spring Boot에서 많은 영향을 받았기 때문에 대부분의 사용
 방법이 유사합니다.
 
-### 4.1 사전 준비
+### 3.1 사전 준비
 본 프레임워크의 클래스들은 모두 `src/main/java/com/seohamin/jastapi` 하위에 있습니다.
-따라서 `java` 폴더 아래에 `com` 패키지부터 통째로 복사하여 프로젝트의 적절한 곳에 배치한 후,
-`com.seohamin` 패키지 하위에 존재하는 예제 프로젝트인 `jastapi_example` 패키지를 삭제하는 것을 권장합니다.
+`java` 폴더 아래에 `com` 패키지부터 통째로 복사하여 프로젝트의 적절한 곳에 배치하면 됩니다.
 
 또한 이 프레임워크는 `Jackson Databind 2.21.2`를 필요로 합니다. 프로젝트의 의존성에 추가되어야 합니다.
 
-### 4.2 기본 서버 동작
+### 3.2 기본 서버 동작
 `JastAPI`는 자체 WAS를 이용하므로 아래 코드를 통해 즉시 서버를 실행 시킬 수 있습니다.
 ```java
 import com.seohamin.jastapi.JastApiApplication;
@@ -93,7 +70,7 @@ public class Main {
 }
 ```
 
-### 4.3 의존성 주입 (DI)
+### 3.3 의존성 주입 (DI)
 `JastAPI`는 서버 구동시 프로젝트를 스캔하며 `@Component` 어노테이션이 달린 클래스를 찾아,
 싱글톤 빈(Bean)으로 관리합니다. 생성자를 통해 필요한 객체를 자동으로 주입 받을 수 있습니다.
 **단, 의존성 주입을 받을 클래스는 단 하나의 생성자만 가지고 있어야 합니다.**
@@ -168,7 +145,7 @@ public class PostRepository {
 ```
 
 
-### 4.4 라우팅 설정
+### 3.4 라우팅 설정
 `@Component`를 통해 빈으로 등록된 클래스 내부에서,
 HTTP 메서드에 맞는 어노테이션(`@Get`, `@Post`, `@Patch`, `@Delete`)을 사용하여 라우팅을 설정합니다.
 
@@ -181,7 +158,7 @@ public PostResponse getPost(
 }
 ```
 
-### 4.5 클라이언트 요청 파싱
+### 3.5 클라이언트 요청 파싱
 `@PathVariable`, `@RequestParam`, `@RequestBody` 어노테이션을 통해서
 클라이언트가 전송하는 요청을 자동으로 파싱할 수 있습니다.
 - **`@PathVariable`**: URL 경로에 포함된 동적 값을 추출합니다. (동시에 여러개 사용가능)
@@ -200,7 +177,7 @@ public PostResponse updatePost(
 }
 ```
 
-### 4.6 HttpRequest & HttpResponse
+### 3.6 HttpRequest & HttpResponse
 컨트롤러에서 `HttpRequest`를 매개변수로 가진 경우, 자동으로 클라이언트에게 받은 요청을 그대로 전달합니다.
 컨트롤러에서 리턴 타입이 `HttpResponse`인 경우, 개발자가 리턴한 `HttpResponse`를 다른 추가 가공 없이 그대로 리턴합니다.
 
@@ -230,7 +207,7 @@ public HttpResponse getHomePage(HttpRequest httpRequest) {
 }
 ```
 
-### 4.7 직렬화와 역직렬화
+### 3.7 직렬화와 역직렬화
 컨트롤러의 리턴 타입이 일반 자바 객체이거나, `@RequestBody`가 정의된 변수의 타입이 일반 자바 객체인 경우,
 각각 자동으로 직렬화, 역직렬화를 진행합니다.
 이때 `Jackson Databind`를 통해서 변환 되기 때문에, 꼭 기본 생성자와 각 필드에 대한 게터가 존재해야합니다.
@@ -254,7 +231,7 @@ public class PostRequest {
 }
 ```
 
-### 4.8 예외 처리
+### 3.8 예외 처리
 `HttpResponseException` 클래스를 이용하면, 비즈니스 로직에서 바로 400번대나 500번대 HTTP 응답코드를 가진 응답을 전송시킬 수 있습니다.
 이외에 일반 예외 (NPE 등)이 발생하면 디스패쳐에서 500 INTERNAL_SERVER_ERROR로 래핑되어서 응답합니다.
 
@@ -262,94 +239,7 @@ public class PostRequest {
 throw new HttpResponseException(ErrorResponse.createBadRequest("HTTP/1.1"));
 ```
 
-## 5. 게시판 CRUD 앱 실행 가이드
-
-아래 가이드는 `JastAPI`의 예제 프로젝트인 게시판 CRUD 프로젝트를 실행시키는 가이드입니다.
-만약 간단하게 이용하고 싶으시다면 아래 링크를 통해 배포 중인 프로젝트를 이용할 수 있습니다.
-
-> <a href="https://jastapi.seohamin.com/">https://jastapi.seohamin.com/</a>
-> 
-> *본 프로젝트에서 비밀번호는 평문으로 저장됩니다. 절대로 실제 비밀번호를 입력하지 마세요.
-
-### 5.1 사전 준비
-
-- **Java**: JDK 21
-- **Database**: MariaDB
-> 만약 JDK 21보다 상위 버전의 JDK를 이용하고 있을 경우, `build.gradle`의 `JavaLanguageVersion.of(21)`부분을 `JavaLanguageVersion.of(자신의 버전)`으로 교체하면 정상적으로 이용 가능합니다.
-
-> MariaDB를 설치 하지 않아도 서버를 구동시 `index.html` 서빙까지는 작동합니다. 
-
-### 5.2 데이터베이스 설정
-
-애플리케이션을 실행하기 전, 로컬에서 MariaDB가 실행 중이어야 하며, 아래 접속 정보에 맞게 데이터 베이스 유저를 생성하거나,
-`MariaDbConnectionProvider.java`에서 접속 유저의 정보를 적절히 수정해야 합니다.
-(외부 설정 파일에서 연결 정보를 가지고 오게 하고 싶었으나, 시간이 부족하여 이렇게 구현되었습니다.)
-
-- **URL**: `jdbc:mariadb://localhost:3306/jastapi_example`
-- **유저 ID**: `jastapi`
-- **유저 비밀번호**: `1234`
-
-데이터베이스에 접근하여 위 설정에 맞게 `jastapi_example` 스키마를 생성하고,
-예제 구동을 위한 `post` 테이블을 만들어야 합니다. 아래 코드를 통해 생성할 수 있습니다.
-```sql
-CREATE TABLE post(
-    id BIGINT NOT NULL AUTO_INCREMENT,
-    title VARCHAR(100) NOT NULL,
-    content VARCHAR(255) NOT NULL,
-    author VARCHAR(100) NOT NULL,
-    password VARCHAR(100) NOT NULL,
-    PRIMARY KEY (id)
-);
-```
-
-### 5.3 서버 실행 방법
-> 1. 프로젝트의 루트 디렉토리(README.md 파일이 존재하는 폴더)에서 아래 명령어를 실행합니다.
-> 
-> `./gradlew build`
-
-
-> 2. 아래 명령어를 통해 생성된 JAR 파일 위치로 이동합니다.
-> 
-> `cd build/libs`
-
-> 3. 아래 명령어를 통해 서버를 실행합니다. (`^C` 또는 `Ctrl + C`를 통해 종료 할 수 있습니다.)
-> 
-> `java -jar JastAPI-1.0.0.jar`
-
-> 4. 콘솔에 `Server started on port 8080...` 메세지가 출력된다면 정상적으로 서버가 구동된 것입니다.
-> <img src="./docs/images/serverlog.png" width="700"  alt="serverLog"/>
-
-### 5.4 서비스 접속 및 이용
-
-> 1. 웹 브라우저를 열고 주소창에 `http://localhost:8080`을 입력합니다.
-
-
-> 2. 화면에 표시된 UI를 통해 게시글을 등록하거나 조회, 수정, 삭제 할 수 있습니다.
-> <img src="./docs/images/main.png" width="700" alt="mainPage" />
-
-### _**본 프로젝트에서 비밀번호는 평문으로 저장됩니다. 절대로 실제 비밀번호를 입력하지 마세요.**_
-
-> 3. 아래 사진과 같이 게시글의 제목, 글쓴이, 비밀번호, 내용을 작성하고 `save` 버튼을 누르면 저장됩니다.
-> <img src="./docs/images/createPost.png" width="300" alt="createPost" />
-> <img src="./docs/images/createPostResult.png" width="300" alt="createPost" />
-
-> 4. 변경 사항은 아래 리스트에서 확인 할 수 있고, 제목을 누르면 내용을 확인 할 수 있습니다.
-> <img src="./docs/images/createPostResultList.png" width="300" alt="createPostResultList" />
-> <img src="./docs/images/createPostResultContent.png" width="300" alt="createPostResultList" />
-
-> 5. 게시물 리스트에서 `edit` 버튼을 누르면 현재의 게시물 내용이 들어가고, 내용을 적절히 수정하고 비밀번호를 올바르게 작성하면
-> 수정이 가능합니다.
-> <img src="./docs/images/editPost.png" width="300" alt="editPost" />
-> <img src="./docs/images/editPostResult.png" width="300" alt="editPostResult" />
-
-> 6. 게시물 리스트에서 `delete` 버튼을 누르고 올바른 비밀번호를 입력하면 게시물 삭제가 가능합니다.
-> <img src="./docs/images/deletePost.png" width="300" alt="deletePost" />
-> <img src="./docs/images/deletePostResult.png" width="300" alt="deletePostResult" />
-
-> 7. 만약 게시물 등록, 수정, 삭제 중에 적절하지 않은 값이 입력 된다면 400 에러가 발생합니다.
-> <img src="./docs/images/400.png" width="300" alt="HTTP400" />
-
-## 6. UML 다이어그램
+## 4. UML 다이어그램
 
 > <img src="./docs/images/flow.png" width="700" alt="flow" />
 > 점선: 의존관계
@@ -359,37 +249,3 @@ CREATE TABLE post(
 > 초록 블럭: 컨테이너가 관리하는 빈(Bean) (@Component를 통해 DI 됨)
 >
 > 흰색 블럭: 일반 자바 객체
-
-> 클래스 성격 및 관계 (Class Types & Relationships)
->
-> - 스테레오타입: 인터페이스는 `<<interface>>`, 열거형은 `<<enumeration>>`, 예외 클래스는 `<<exception>>`으로 분류합니다.
->
-> - 상속 및 구현: 클래스 간의 관계를 시각적 화살표 대신 클래스 명 옆에 `(extends Parent)` 또는 `(implements Interface)` 형식으로 명시합니다.
->
-> 멤버 및 메서드 (Members & Methods)
->
-> - Static 멤버: 정적 변수나 메서드는 밑줄(underline)을 그어 표시합니다.
->
-> - 생성자: 객체 생성을 담당하는 메서드 앞에는 `<<create>>`를 붙입니다.
->
-> - 어노테이션: 클래스, 메서드, 파라미터에 적용된 어노테이션은 `<<@Annotation>>` 형식으로 표기합니다.
->
-> 예외 명시 (Exception Handling)
->
-> - 메서드 실행 중 발생(throw)할 수 있는 예외는 메서드 시그니처 뒤에 `{exception = ExceptionName}` 형식을 사용하여 명시합니다.
-
-<img src="./docs/images/uml/UML-01.jpg" width="700" alt="UML01" />
-<img src="./docs/images/uml/UML-02.jpg" width="700" alt="UML02" />
-<img src="./docs/images/uml/UML-03.jpg" width="700" alt="UML03" />
-<img src="./docs/images/uml/UML-04.jpg" width="700" alt="UML04" />
-<img src="./docs/images/uml/UML-05.jpg" width="700" alt="UML05" />
-<img src="./docs/images/uml/UML-06.jpg" width="700" alt="UML06" />
-<img src="./docs/images/uml/UML-07.jpg" width="700" alt="UML07" />
-<img src="./docs/images/uml/UML-08.jpg" width="700" alt="UML08" />
-<img src="./docs/images/uml/UML-09.jpg" width="700" alt="UML09" />
-<img src="./docs/images/uml/UML-10.jpg" width="700" alt="UML10" />
-<img src="./docs/images/uml/UML-11.jpg" width="700" alt="UML11" />
-<img src="./docs/images/uml/UML-12.jpg" width="700" alt="UML12" />
-<img src="./docs/images/uml/UML-13.jpg" width="700" alt="UML13" />
-<img src="./docs/images/uml/UML-13.jpg" width="700" alt="UML14" />
-

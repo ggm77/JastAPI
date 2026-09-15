@@ -5,13 +5,7 @@
 _*Note: The Korean version is the original document and may offer the most natural phrasing._
 
 ## Project Title
-**Backend Framework `JastAPI` and Board CRUD App**
-
-## Team Members
-| Name                    | Student ID       | Role                                  |
-|:----------------------|:---------|:------------------------------------|
-| Hamin SEO (서하민)       | 22300378 | Backend framework development, Board CRUD app architecture design and implementation |
-| Donghyeon SON (손동현)   | 22300385 | Board CRUD app implementation                       |
+**Backend Framework `JastAPI`**
 
 ## Development Version and Dependencies
 - **Java**: `21`
@@ -24,7 +18,8 @@ _*Note: The Korean version is the original document and may offer the most natur
 It is heavily inspired by Spring Boot.
 It features a built-in WAS, enabling you to run the server with just a single line of code without complex external configurations.
 
-This project is mainly composed of two parts: the framework core, `JastAPI`, and a demo application utilizing it, `jastapi_example`.
+> This repository originally also contained a Board CRUD demo app (`jastapi_example`) built on top of `JastAPI`.
+> It has since been removed so this repository can be published as a standalone framework.
 
 ## 2. JastAPI (Backend Framework)
 Implemented with inspiration from Spring Boot's operating mechanism,
@@ -53,33 +48,17 @@ serialize and deserialize incoming JSON requests from the client into Java objec
 > Processing flow when a request is received.
 <img src="./docs/images/backendFlow.png" width="700" alt="Runtime Flow" />
 
-## 3. Board CRUD App
-This is a sample project demonstrating how the `JastAPI` framework can actually be utilized.
-It implements basic post creation, reading, updating, and deletion (CRUD) features.
-It also persists data by integrating with a DB.
-
-### 3.1 Key Components
-
-- **Main.java**: The entry point of the application,
-running the server through the `JastApiApplication.run()` method.
-- **HomeController.java**: Serves the index.html file, which acts as the frontend when accessing the root path (`/`).
-- **PostController.java**: Provides the `/api/post` endpoint, receives HTTP requests, and passes them to the service layer.
-- **PostService.java**: Generates responses according to various logic based on the HTTP request information passed down from the controller.
-- **MariaDbConnectionProvider.java & PostRepository.java**: Responsible for database connection and manipulating actual data.
-
-## 4. JastAPI Backend Framework Usage Guide
+## 3. JastAPI Backend Framework Usage Guide
 `JastAPI` was developed with the goal of allowing developers to easily implement a server through intuitive annotations.
 Additionally, since this backend framework is heavily inspired by Spring Boot, most of its usage is quite similar.
 
-### 4.1 Prerequisites
+### 3.1 Prerequisites
 All classes of this framework are located under `src/main/java/com/seohamin/jastapi`.
-Therefore, it is recommended to copy the entire `com` package under the `java` folder,
-place it in an appropriate location in your project, and then delete the `jastapi_example` package,
-which is an example project existing under the `com.seohamin` package.
+Copy the entire `com` package under the `java` folder and place it in an appropriate location in your project.
 
 Furthermore, this framework requires `Jackson Databind 2.21.2`. It must be added to your project's dependencies.
 
-### 4.2 Basic Server Operation
+### 3.2 Basic Server Operation
 `JastAPI` uses its own WAS, so you can immediately run the server using the code below.
 ```java
 import com.seohamin.jastapi.JastApiApplication;
@@ -94,7 +73,7 @@ public class Main {
 }
 ```
 
-### 4.3 Dependency Injection (DI)
+### 3.3 Dependency Injection (DI)
 `JastAPI` scans the project upon server startup, finds classes annotated with
 `@Component`, and manages them as Singleton Beans. You can automatically receive necessary objects via constructor injection.
 **However, the class receiving dependency injection must have only one constructor.**
@@ -170,7 +149,7 @@ public class PostRepository {
 ```
 
 
-### 4.4 Routing Configuration
+### 3.4 Routing Configuration
 Inside a class registered as a bean via `@Component`,
 you can configure routing using annotations corresponding to HTTP methods (`@Get`, `@Post`, `@Patch`, `@Delete`).
 
@@ -183,7 +162,7 @@ public PostResponse getPost(
 }
 ```
 
-### 4.5 Parsing Client Requests
+### 3.5 Parsing Client Requests
 You can automatically parse requests sent by the client using the
 `@PathVariable`, `@RequestParam`, and `@RequestBody` annotations.
 - **`@PathVariable`**: Extracts dynamic values included in the URL path. (Multiple can be used simultaneously).
@@ -202,7 +181,7 @@ public PostResponse updatePost(
 }
 ```
 
-### 4.6 HttpRequest & HttpResponse
+### 3.6 HttpRequest & HttpResponse
 If a controller takes `HttpRequest` as a parameter, it automatically passes the exact request received from the client.
 If the controller's return type is `HttpResponse`, it directly returns the `HttpResponse` returned by the developer without any further processing.
 
@@ -232,7 +211,7 @@ public HttpResponse getHomePage(HttpRequest httpRequest) {
 }
 ```
 
-### 4.7 Serialization and Deserialization
+### 3.7 Serialization and Deserialization
 If the controller's return type is a standard Java object, or if the type of a variable defined with
 `@RequestBody` is a standard Java object, it automatically performs serialization and deserialization, respectively.
 Since this conversion is handled by `Jackson Databind`, a default constructor and getters for each field must be present.
@@ -256,7 +235,7 @@ public class PostRequest {
 }
 ```
 
-### 4.8 Exception Handling
+### 3.8 Exception Handling
 By using the `HttpResponseException` class, you can instantly send a response with a 400-level or 500-level HTTP status code directly from your business logic.
 In addition, if a general exception (e.g., NPE) occurs, it is wrapped by the Dispatcher and returned as a 500 INTERNAL_SERVER_ERROR response.
 
@@ -264,125 +243,6 @@ In addition, if a general exception (e.g., NPE) occurs, it is wrapped by the Dis
 throw new HttpResponseException(ErrorResponse.createBadRequest("HTTP/1.1"));
 ```
 
-## 5. Board CRUD App Execution Guide
-
-The following guide is for running the Board CRUD project, an example project of `JastAPI`.
-If you want to use it simply, you can access the deployed project via the link below.
-
-> <a href="https://jastapi.seohamin.com/">https://jastapi.seohamin.com/</a>
->
-> *In this project, passwords are saved as plaintext. Never enter a real password.
-
-### 5.1 Prerequisites
-
-- **Java**: JDK 21
-- **Database**: MariaDB
-> If you are using a JDK version higher than 21, you can use it normally by replacing the `JavaLanguageVersion.of(21)` part in `build.gradle` with `JavaLanguageVersion.of(your_version)`.
-
-> Even if you do not install MariaDB, the server will operate up to serving `index.html` when started.
-
-### 5.2 Database Configuration
-
-Before running the application, MariaDB must be running locally.
-You need to create a database user according to the connection information below,
-or appropriately modify the connecting user's information in `MariaDbConnectionProvider.java`.
-(I intended to retrieve the connection information from an external configuration file, but due to time constraints, it was implemented this way.)
-
-- **URL**: `jdbc:mariadb://localhost:3306/jastapi_example`
-- **User ID**: `jastapi`
-- **User Password**: `1234`
-
-Access the database to create the `jastapi_example` schema according to the settings above, and create the `post` table to run the example.
-You can create it using the code below.
-```sql
-CREATE TABLE post(
-    id BIGINT NOT NULL AUTO_INCREMENT,
-    title VARCHAR(100) NOT NULL,
-    content VARCHAR(255) NOT NULL,
-    author VARCHAR(100) NOT NULL,
-    password VARCHAR(100) NOT NULL,
-    PRIMARY KEY (id)
-);
-```
-
-### 5.3 How to Run the Server
-> 1. Run the following command in the root directory of the project (the folder containing the README.md file).
-> 
-> `./gradlew build`
-
-
-> 2. Navigate to the location of the generated JAR file using the command below.
-> 
-> `cd build/libs`
-
-> 3. Run the server using the command below. (You can terminate it with `^C` or `Ctrl + C`.)
-> 
-> `java -jar JastAPI-1.0.0.jar`
-
-> 4. If the message `[INFO] Server started on port 8080...` is printed in the console, the server has started successfully.
-> <img src="./docs/images/serverlog.png" width="700"  alt="serverLog"/>
-
-### 5.4 Service Access and Usage
-
-> 1. Open a web browser and enter `http://localhost:8080` in the address bar.
-
-> 2. You can register, view, edit, or delete posts through the UI displayed on the screen.
-> <img src="./docs/images/main.png" width="700" alt="mainPage" />
-
-### _**In this project, passwords are stored in plaintext. Never enter a real password.**_
-
-> 3. As shown in the image below, enter the post title, author, password, and content, then click the `save` button to save it.
-> <img src="./docs/images/createPost.png" width="300" alt="createPost" />
-> <img src="./docs/images/createPostResult.png" width="300" alt="createPost" />
-
-> 4. You can check the changes in the list below, and click on the title to view the content.
-> <img src="./docs/images/createPostResultList.png" width="300" alt="createPostResultList" />
-> <img src="./docs/images/createPostResultContent.png" width="300" alt="createPostResultList" />
-
-> 5. Clicking the `edit` button in the post list loads the current post content. You can modify it by making appropriate changes and entering the correct password.
-> <img src="./docs/images/editPost.png" width="300" alt="editPost" />
-> <img src="./docs/images/editPostResult.png" width="300" alt="editPostResult" />
-
-> 6. You can delete a post by clicking the `delete` button in the post list and entering the correct password.
-> <img src="./docs/images/deletePost.png" width="300" alt="deletePost" />
-> <img src="./docs/images/deletePostResult.png" width="300" alt="deletePostResult" />
-
-> 7. If an invalid value is entered during post registration, modification, or deletion, a 400 error occurs.
-> <img src="./docs/images/400.png" width="300" alt="HTTP400" />
-
-## 6. UML Diagrams
+## 4. UML Diagrams
 
 > <img src="./docs/images/flow.png" width="700" alt="flow" />
-
-> Class Stereotypes & Relationships
->
-> - Stereotypes: Classes are categorized using `<<interface>>`, `<<enumeration>>`, `<<exception>>`, and `<<annotation>>`.
->
-> - Inheritance & Implementation: Relationships are explicitly stated next to the class name as `(extends Parent)` or `(implements Interface)` for better readability within the diagram blocks.
->
-> Members & Methods
->
-> - Static Members: Static fields and methods are denoted with an underline.
->
-> - Constructors: Constructor methods are identified by the `<<create>>` prefix.
->
-> - Annotations: Annotations applied to any element are represented as stereotypes, such as `<<@Component>>` or `<<@Patch("/api/post/{id}")>>`.
->
-> Exception Specifications
->
-> - Potential exceptions thrown by a method are specified at the end of the method signature using the `{exception = ExceptionName}` curly brace notation.
-
-<img src="./docs/images/uml/UML-01.jpg" width="700" alt="UML01" />
-<img src="./docs/images/uml/UML-02.jpg" width="700" alt="UML02" />
-<img src="./docs/images/uml/UML-03.jpg" width="700" alt="UML03" />
-<img src="./docs/images/uml/UML-04.jpg" width="700" alt="UML04" />
-<img src="./docs/images/uml/UML-05.jpg" width="700" alt="UML05" />
-<img src="./docs/images/uml/UML-06.jpg" width="700" alt="UML06" />
-<img src="./docs/images/uml/UML-07.jpg" width="700" alt="UML07" />
-<img src="./docs/images/uml/UML-08.jpg" width="700" alt="UML08" />
-<img src="./docs/images/uml/UML-09.jpg" width="700" alt="UML09" />
-<img src="./docs/images/uml/UML-10.jpg" width="700" alt="UML10" />
-<img src="./docs/images/uml/UML-11.jpg" width="700" alt="UML11" />
-<img src="./docs/images/uml/UML-12.jpg" width="700" alt="UML12" />
-<img src="./docs/images/uml/UML-13.jpg" width="700" alt="UML13" />
-<img src="./docs/images/uml/UML-13.jpg" width="700" alt="UML14" />
