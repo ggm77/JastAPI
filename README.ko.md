@@ -49,11 +49,28 @@ HTTP응답에서 적절한 값을 파싱할 수 있습니다.
 또한, 본 백엔드 프레임워크는 Spring Boot에서 많은 영향을 받았기 때문에 대부분의 사용
 방법이 유사합니다.
 
-### 3.1 사전 준비
-본 프레임워크의 클래스들은 모두 `src/main/java/com/seohamin/jastapi` 하위에 있습니다.
-`java` 폴더 아래에 `com` 패키지부터 통째로 복사하여 프로젝트의 적절한 곳에 배치하면 됩니다.
+### 3.1 설치
+`JastAPI`는 [JitPack](https://jitpack.io/#ggm77/JastAPI)을 통해 배포됩니다.
 
-또한 이 프레임워크는 `Jackson Databind 2.21.2`를 필요로 합니다. 프로젝트의 의존성에 추가되어야 합니다.
+JitPack 저장소를 추가합니다. 최근 Gradle/IntelliJ 버전으로 생성한 프로젝트처럼 `settings.gradle`에 `dependencyResolutionManagement`를 사용 중이라면 거기에 추가하세요.
+```gradle
+// settings.gradle
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+그렇지 않다면 `build.gradle`의 `repositories` 블록에 추가하면 됩니다.
+
+이후 `build.gradle`에 의존성을 추가합니다.
+```gradle
+dependencies {
+    implementation 'com.github.ggm77:JastAPI:v1.0.0'
+}
+```
+`Jackson Databind`는 전이 의존성(transitive dependency)으로 함께 포함되므로 별도로 추가할 필요가 없습니다.
 
 ### 3.2 기본 서버 동작
 `JastAPI`는 자체 WAS를 이용하므로 아래 코드를 통해 즉시 서버를 실행 시킬 수 있습니다.
